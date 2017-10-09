@@ -1,3 +1,5 @@
+# social_structure_learning
+
 
 The structure of these scripts is hopefully straightforward. First, running
 anaconda you can import the environmental settings with
@@ -39,4 +41,4 @@ most of the heavy lifting. For each module, these are outlined here:
       instruction_slides/, aggregates these responses with those from
       'instructions' and saves self report data.
 
-let me know if you have any questions :) 
+let me know if you have any questions :)

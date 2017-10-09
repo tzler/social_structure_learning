@@ -15,10 +15,11 @@ wait_time = 0
 # set time before CS that tracker should drift correct and/or reset
 window_before_CS = 2
 # set n_stimuli presented before the next drift correction
-drift_interval = 3
+drift_interval = 2
+
 
 def run(window, subject_id):
-    """Present video, collect SCR data, trigger biopac during CS and US."""
+    """Present video, collect SCR and gaze data, align with video."""
     #
     # load parameters for timing and design of stimuli
     shock_lag, stim_length, wait_time = params.intervals()
@@ -63,7 +64,7 @@ def run(window, subject_id):
     time = core.Clock()
     time.reset()
 
-    while time_i < 10:  # movie.status != visual.FINISHED:
+    while time_i < 30:  # movie.status != visual.FINISHED:
 
         # draw next frame
         movie.draw()

@@ -1,7 +1,7 @@
 """Funtions to call the Eyelink 1000 using pylink."""
 
-import numpy, os, random, pylink
-from psychopy import visual, core, event, monitors
+import os, pylink
+from psychopy import visual, event
 from eyelink_graphics import EyeLinkCoreGraphicsPsychoPy
 
 class eyelink:

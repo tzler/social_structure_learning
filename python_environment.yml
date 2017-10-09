@@ -1,0 +1,63 @@
+name: experimental
+channels:
+- cogsci
+- defaults
+dependencies:
+- python-pygaze=0.6.0a21=py_0
+- certifi=2016.2.28=py27_0
+- openssl=1.0.2l=0
+- pip=9.0.1=py27_1
+- python=2.7.13=0
+- readline=6.2=2
+- setuptools=36.4.0=py27_1
+- sqlite=3.13.0=0
+- tk=8.5.18=0
+- wheel=0.29.0=py27_0
+- zlib=1.2.11=0
+- pip:
+  - appnope==0.1.0
+  - backports-abc==0.5
+  - backports.shutil-get-terminal-size==1.0.0
+  - configobj==5.0.6
+  - decorator==4.1.2
+  - django==1.11.5
+  - enum34==1.1.6
+  - future==0.16.0
+  - image==1.5.15
+  - imageio==2.1.2
+  - ipykernel==4.6.1
+  - ipython==5.5.0
+  - ipython-genutils==0.2.0
+  - json-tricks==3.8.0
+  - jupyter-client==5.1.0
+  - jupyter-core==4.3.0
+  - moviepy==0.2.3.2
+  - numpy==1.13.1
+  - olefile==0.44
+  - pathlib2==2.3.0
+  - pexpect==4.2.1
+  - pickleshare==0.7.4
+  - pillow==4.2.1
+  - prompt-toolkit==1.0.15
+  - psychopy==1.85.3
+  - ptyprocess==0.5.2
+  - pygame==1.9.3
+  - pyglet==1.2.4
+  - pygments==2.2.0
+  - pylink==0.3.2
+  - pyserial==3.4
+  - python-dateutil==2.6.1
+  - pytz==2017.2
+  - pyzmq==16.0.2
+  - scandir==1.6
+  - scipy==0.19.1
+  - simplegeneric==0.8.1
+  - singledispatch==3.4.0.3
+  - six==1.11.0
+  - tornado==4.5.2
+  - tqdm==4.11.2
+  - traitlets==4.3.2
+  - wcwidth==0.1.7
+  - wxpython==4.0.0b2
+prefix: /Users/ssnl_booth2/anaconda/envs/experimental
+

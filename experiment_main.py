@@ -32,7 +32,7 @@ def run_subject(subject_id):
     # TO DO: check biopac-gaze-video alignment across entire experiment
     # TO DO: make sure the laggy video is just processing speed
     # TO DO: update stimuli markers to reflect ACTUAL design
-    window = stimuli.run(window, subject_id)
+    self_report, window = stimuli.run(self_report, window, subject_id)
 
     """
     'video_module' presents stimuli of model undergoing fear conditioning and

@@ -1,6 +1,7 @@
 """Funtions to call the Eyelink 1000 using pylink."""
 
 import os, pylink
+import keyboard_input
 from psychopy import visual, event
 from eyelink_graphics import EyeLinkCoreGraphicsPsychoPy
 
@@ -115,12 +116,13 @@ class eyelink:
 
         try:
             # setting the third value to zero preserves background image
-            tracker.doDriftCorrect(x, y, 0, 1)
+            tracker.doDriftCorrect(x, y, 0, 0)
+            tracking = 1
 
         except:
-            print('trying to re-calibrate')
-            tracker.doTrackerSetup()
-            print('calibration')
+
+            tracking = 0
+            print('ending tracking')
 
         # start recording
         tracker.setOfflineMode()
@@ -128,17 +130,31 @@ class eyelink:
         tracker.startRecording(1, 1, 1, 1)
         pylink.pumpDelay(50) # wait for 100 ms to make sure data of interest is recorded
 
-        return mov, win
+        return mov, win, tracking
 
 
     def calibration(self, tracker, window):
         """Provide instructions for calibration."""
-        message = visual.TextStim(window, text = 'Camera calibration!', color = 'black', units = 'pix')
-        message.draw()
+        #
+        text_Q = 'eyetracking instructions'
+        setup_question = visual.TextStim(window, text=text_Q, color = 'black', units='pix')
+        setup_question.draw()
         window.flip()
-        event.waitKeys()
         # calibrate subjects gaze
         tracker.doTrackerSetup()
+        text_A = 'ZERO/ONE'
+        tracker_q = visual.TextStim(window, text=text_A, color = 'black', units='pix')
+        tracker_q.draw()
+        window.flip()
+        answer = keyboard_input.report_num(window, tracker_q)
+        window.flip()
+        recalibration_trials = 0
+        text = '%s/instruction_slides/slide12.png' % os.getcwd()
+        calibration_message = visual.ImageStim(window, image=text)
+        calibration_message.draw()
+        window.flip()
+        event.waitKeys()
+        return answer, recalibration_trials
 
     def indices(self, CS_onset):
         """Define indices to punctuate experiment."""

@@ -14,8 +14,8 @@ shock_key = 'space'
 finish_key = 'return'
 
 # timing for white screen around final shock in the absence of control.
-time_before_shock = 1
-time_after_shock = .2
+time_before_shock = .5
+time_after_shock = .5
 
 # create empty dictionary for self report answers + time details
 self_report = {}
@@ -27,7 +27,7 @@ SD9 = experiment_ports.SD9()
 
 # set stimulus background and remove mouse visibility
 monitor = 'testmonitor'
-win = visual.Window(fullscr=1, monitor=monitor, units="pix", color=[.5, .5, .5])
+win = visual.Window(fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
 win.mouseVisible = False
 
 
@@ -46,7 +46,7 @@ def run():
         win.flip()
 
         # for simple instruction slides present text and wait for keypress
-        if iText in [1, 2, 3, 4, 5, 6, 11, 12, 13]:
+        if iText in [1, 2, 3, 4, 5, 6, 11, 12]:  # 13
             event.waitKeys()
 
         # self calibration
@@ -63,13 +63,17 @@ def run():
 
         # participants report their experience
         elif iText == 9:
-            self_report['pain_self'] = keyboard_input.reportNum(win, screen)
+            self_report['pain_self'] = keyboard_input.report_num(win, screen)
 
         # participants report their voltage
         elif iText == 10:
-            self_report['voltage'] = keyboard_input.reportWord(win, screen)
+            self_report['voltage'] = keyboard_input.report_num(win, screen)
 
     SD9.close()
+
+    text_Q = 'instructions for using the eyetracker'
+    setup_question = visual.TextStim(win, text=text_Q, units='pix')
+    setup_question.draw()
     win.flip()
 
     return self_report, win

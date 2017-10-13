@@ -14,17 +14,17 @@ def run(win, self_report, subject_id):
 
     for Q_i in range(0, len(questions)):
 
-        text = '%s/instruction_slides/post%s.png' % (getcwd(), Q_i + 1)
-        screen = visual.ImageStim(win, image=text)
-        screen.draw()
+        slide = '%s/instruction_slides/post%s.png' % (getcwd(), Q_i + 1)
+        text = visual.ImageStim(win, image=slide)
+        text.draw()
         win.flip()
 
         if Q_i == 0:
             # TO DO: fix this, it allows a space for an answer ...
-            self_report['%s' % questions[Q_i]] = inputs.reportWord(win, screen)
+            self_report['%s' % questions[Q_i]] = inputs.report_word(win, text)
 
         elif Q_i in [1, 2, 3, 4]:
-            self_report['%s' % questions[Q_i]] = inputs.reportNum(win, screen)
+            self_report['%s' % questions[Q_i]] = inputs.report_num(win, text)
 
         elif Q_i == 5:
             file_name = '%s/self_report_data/%s.npy' % (getcwd(), subject_id)

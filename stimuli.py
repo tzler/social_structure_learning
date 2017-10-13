@@ -2,11 +2,11 @@
 # converting EDF files, converting "night", for example
 # $ /Applications/Eyelink/EDF_Access_API/Example/edf2asc night.EDF
 
-from psychopy import core, event
+from psychopy import core, event, visual
 import experiment_ports
 import tracker_functions
 import design_parameters as params  # my functions
-import pylink
+import pylink, os
 
 # set key for subjects to pause during experiment
 exit_key = 'w'
@@ -15,10 +15,10 @@ wait_time = 0
 # set time before CS that tracker should drift correct and/or reset
 window_before_CS = 2
 # set n_stimuli presented before the next drift correction
-drift_interval = 2
+drift_interval = 1
 
 
-def run(window, subject_id):
+def run(self_report, window, subject_id):
     """Present video, collect SCR and gaze data, align with video."""
     #
     # load parameters for timing and design of stimuli
@@ -42,8 +42,9 @@ def run(window, subject_id):
     window, movie = link.monitor_setup(window)
     frame_time = movie.getCurrentFrameTime
 
-    # calibrate subjects
-    link.calibration(tracker, window)
+    # calibrate subjects, determine whether we're using their gaze data
+    tracking, recalibration_trials = link.calibration(tracker, window)
+    # tmp code, but this is what we need to present here
 
     # connect to biopac
     biopac = experiment_ports.biopac()
@@ -58,14 +59,15 @@ def run(window, subject_id):
     biopac.begin()
 
     # start recording eyegaze
-    link.initiate(tracker)
+    if tracking:
+        link.initiate(tracker)
+        print('tracking = ', tracking)
 
     # set time to zero and start
     time = core.Clock()
     time.reset()
 
     while time_i < 30:  # movie.status != visual.FINISHED:
-
         # draw next frame
         movie.draw()
         # update foreground
@@ -76,7 +78,8 @@ def run(window, subject_id):
         time_i = round(frame_t)
 
         # send time and position data to tracker for later visualization
-        frame_n = link.align_frames(tracker, frame_t, frame_n, movie, time)
+        if tracking:
+            frame_n = link.align_frames(tracker, frame_t, frame_n, movie, time)
 
         # signal CS onset
         if (time_i == CS_onset):
@@ -90,56 +93,76 @@ def run(window, subject_id):
 
             # update onset time to look for
             stim_i, CS_onset = next_CS(stim_i, isi, stim_length)
-            tracker_onset = CS_onset - window_before_CS
+            if tracking:
+                tracker_onset = CS_onset - window_before_CS
+                print('tracking = ', tracking)
 
         # signal US
         elif (time_i == US_onset):
             biopac.US()
             US_onset = -1
-            tracker.sendMessage('US')
+            if tracking:
+                tracker.sendMessage('US')
+                print('tracking = ', tracking)
 
         # signal CS & US offset
         elif (time_i == CS_offset):
             # signal the biopac
             biopac.end_stim()
-            # signal eye tracker
-            tracker.sendMessage('END_CS')
             # update offset time to look for
             CS_offset = CS_onset + stim_length
+            if tracking:
+                # signal eye tracker
+                tracker.sendMessage('END_CS')
+                print('tracking = ', tracking)
 
         # drift correct with the eye tracker
         elif (time_i == tracker_onset):
 
-            # reference time to correct for
-            time_pause = time.getTime()
-            # don't catch redundant onsets
-            tracker_onset = -1
+            if tracking:
+                # reference time to correct for
+                time_pause = time.getTime()
+                # don't catch redundant onsets
+                tracker_onset = -1
 
-            # drift correct every so often
-            if ((isi_count + 1) % drift_interval) == 0:
+                # drift correct every so often
+                if ((isi_count + 1) % drift_interval) == 0:
 
-                movie, window = link.drift(tracker, movie, window)
+                    movie, window, tracking = link.drift(tracker, movie, window)
+                    recalibration_trials = recalibration_trials + 1
+                    print('tracking = ', tracking)
 
-            # message eye tracker the isi count
-            tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
+                # message eye tracker the isi count
+                tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
+                # update clock to reflect time spent drift correcting
+                time_unpause = time.getTime()
+                time.add(time_unpause - time_pause)
 
-            # update clock to reflect time spent drift correcting
-            time_unpause = time.getTime()
-            time.add(time_unpause - time_pause)
             isi_count = isi_count + 1
 
         # collect key presses
         keyPressed = event.getKeys()
         # if exit key was pressed, end video
         if keyPressed:
-            if keyPressed[0] == exit_key:
-                event.waitKeys()
+            if (keyPressed[0] == 'e'):
+                prompt = 'not using eyetracker during the experiment'
+                notice = visual.TextStim(window, text=prompt, color='black', units='pix')
+                notice.draw()
+                window.flip()
+                core.wait(1)
+                tracking = 0
+            elif (keyPressed[0] == 'q'):
+                visual.FINISHED = 1
+
 
     # end video, transfer eye_tracker data, close tracker and biopac
     link.close(tracker)
     biopac.end()
 
-    return window
+    self_report['recalibration_trials'] = recalibration_trials
+    self_report['finished_tracking'] = tracking
+
+    return self_report, window
 
 
 def next_CS(stim_i, isi, stimulus_length):

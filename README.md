@@ -5,7 +5,8 @@ Import environmental dependencies (e.g. python2.7, psychopy, pyserial) using ana
 
     $ conda env create -f environment.yml
 
-Hardware amd additional software dependencies supported for data collection are
+In 'analysis' are data and scripts (in progress) to test for renewal. In 'collection' are 
+scripts for data collection. Hardware supported for data collection are
 	
 	- Eyetracker: Eyelink 1000
 		

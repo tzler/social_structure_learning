@@ -5,13 +5,14 @@ import seaborn as sns
 import numpy as np
 import glob
 
+sns.set()
+
 pandas.options.mode.chained_assignment = None
 
 
 def generate_data_frame():
     """Generate a pandas data frame from behavioral data of all subjects."""
-    data_path = '/Users/ssnl_booth2/ssl/experiment_2/analysis/data_self_report_study1'
-
+    data_path = os.getcwd() + '/data_self_report_study1'
     file_names = os.listdir(data_path) 
 
     subject_names = []
@@ -68,7 +69,7 @@ def generate_data_frame():
     for column in convert_columns: 
         self_report[column] = pandas.to_numeric(self_report[column]); 
     
-    return self_report
+    return self_report, subject_names
 
 def correlation_matrix(self_report):
     """Visualize correlation matrix from behavioral data."""
@@ -82,10 +83,10 @@ def correlation_matrix(self_report):
     ax1.set_yticks(np.array(list(range(0,len(title_names)))))
     ax1.set_yticklabels(title_names); 
     ax.set_cmap('bwr') # 'coolwarm' # 'seismic'
-    #ax.set_clim([-1,1])
+    ax.set_clim([-1,1])
     ax.set_alpha(1)
     plt.title('correlation between self report measures\n'); 
-    plt.colorbar()
+    #plt.colorbar()
     plt.show()
 
 def cluster(self_report):

@@ -153,3 +153,5 @@ def amplitude(subject_timecourse,onset):
     
     # return max_interval, max_index, max_value, min_interval, min_index, min_value for debugging/visualization
     return max_value - min_value
+
+

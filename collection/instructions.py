@@ -14,8 +14,8 @@ shock_key = 'space'
 finish_key = 'return'
 
 # timing for white screen around final shock in the absence of control.
-time_before_shock = .5
-time_after_shock = .5
+time_before_shock = 2
+time_after_shock = 1
 
 # create empty dictionary for self report answers + time details
 self_report = {}
@@ -35,10 +35,10 @@ def run():
     """Provide instructions, self-calibration shock, and self-report."""
     # mostly finished, aside from updating the slides
 
-    for iText in range(1, 14):
+    for iText in range(1, 12):
 
         # load instructions
-        text = '%s/instruction_slides/slide%s.png' % (getcwd(), iText)
+        text = '%s/instruction_slides/day1_slide%s.png' % (getcwd(), iText)
 
         # present instructions
         screen = visual.ImageStim(win, image=text)
@@ -46,15 +46,15 @@ def run():
         win.flip()
 
         # for simple instruction slides present text and wait for keypress
-        if iText in [1, 2, 3, 4, 5, 6, 11, 12]:  # 13
+        if iText in [1, 2, 3, 4, 5, 11]:
             event.waitKeys()
 
         # self calibration
-        elif iText == 7:
+        elif iText == 6:
             keyboard_input.calibrate(SD9, shock_key, finish_key)
 
         # subject is shocked at a "random" point at their chosen value
-        elif iText == 8:
+        elif iText == 7:
             event.waitKeys()
             win.flip()
             core.wait(time_before_shock)

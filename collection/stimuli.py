@@ -42,8 +42,11 @@ def run(self_report, window, subject_id):
     window, movie = link.monitor_setup(window)
     frame_time = movie.getCurrentFrameTime
 
+    # wait for a given interval so subjects physiological respones "settle"
+    core.wait(wait_time)
+
     # calibrate subjects, determine whether we're using their gaze data
-    tracking, recalibration_trials = link.calibration(tracker, window)
+    link.calibration(tracker, window)
     # tmp code, but this is what we need to present here
 
     # connect to biopac
@@ -52,22 +55,17 @@ def run(self_report, window, subject_id):
     # initiate biopack. set all to 0 except for "not experiment" channel
     biopac.initiate()
 
-    # wait for a given interval so subjects physiological respones "settle"
-    core.wait(wait_time)
-
     # begin experiment: recording physio data and presenting video
     biopac.begin()
 
     # start recording eyegaze
-    if tracking:
-        link.initiate(tracker)
-        print('tracking = ', tracking)
+    link.initiate(tracker)
 
     # set time to zero and start
     time = core.Clock()
     time.reset()
 
-    while time_i < 30:  # movie.status != visual.FINISHED:
+    while time_i < 60:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground
@@ -78,8 +76,7 @@ def run(self_report, window, subject_id):
         time_i = round(frame_t)
 
         # send time and position data to tracker for later visualization
-        if tracking:
-            frame_n = link.align_frames(tracker, frame_t, frame_n, movie, time)
+        frame_n = link.align_frames(tracker, frame_t, frame_n, movie, time)
 
         # signal CS onset
         if (time_i == CS_onset):
@@ -93,17 +90,13 @@ def run(self_report, window, subject_id):
 
             # update onset time to look for
             stim_i, CS_onset = next_CS(stim_i, isi, stim_length)
-            if tracking:
-                tracker_onset = CS_onset - window_before_CS
-                print('tracking = ', tracking)
+            tracker_onset = CS_onset - window_before_CS
 
         # signal US
         elif (time_i == US_onset):
             biopac.US()
             US_onset = -1
-            if tracking:
-                tracker.sendMessage('US')
-                print('tracking = ', tracking)
+            tracker.sendMessage('US')
 
         # signal CS & US offset
         elif (time_i == CS_offset):
@@ -111,32 +104,27 @@ def run(self_report, window, subject_id):
             biopac.end_stim()
             # update offset time to look for
             CS_offset = CS_onset + stim_length
-            if tracking:
-                # signal eye tracker
-                tracker.sendMessage('END_CS')
-                print('tracking = ', tracking)
+            # signal eye tracker
+            tracker.sendMessage('END_CS')
 
         # drift correct with the eye tracker
         elif (time_i == tracker_onset):
 
-            if tracking:
-                # reference time to correct for
-                time_pause = time.getTime()
-                # don't catch redundant onsets
-                tracker_onset = -1
+            # reference time to correct for
+            time_pause = time.getTime()
+            # don't catch redundant onsets
+            tracker_onset = -1
 
-                # drift correct every so often
-                if ((isi_count + 1) % drift_interval) == 0:
+            # drift correct every so often
+            if ((isi_count + 1) % drift_interval) == 0:
 
-                    movie, window, tracking = link.drift(tracker, movie, window)
-                    recalibration_trials = recalibration_trials + 1
-                    print('tracking = ', tracking)
+                movie, window, tracking = link.drift(tracker, movie, window)
 
-                # message eye tracker the isi count
-                tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
-                # update clock to reflect time spent drift correcting
-                time_unpause = time.getTime()
-                time.add(time_unpause - time_pause)
+            # message eye tracker the isi count
+            tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
+            # update clock to reflect time spent drift correcting
+            time_unpause = time.getTime()
+            time.add(time_unpause - time_pause)
 
             isi_count = isi_count + 1
 
@@ -158,9 +146,6 @@ def run(self_report, window, subject_id):
     # end video, transfer eye_tracker data, close tracker and biopac
     link.close(tracker)
     biopac.end()
-
-    self_report['recalibration_trials'] = recalibration_trials
-    self_report['finished_tracking'] = tracking
 
     return self_report, window
 

@@ -2,7 +2,7 @@
 
 import os, pylink
 import keyboard_input
-from psychopy import visual, event
+from psychopy import visual, event, core
 from eyelink_graphics import EyeLinkCoreGraphicsPsychoPy
 
 class eyelink:
@@ -116,6 +116,7 @@ class eyelink:
 
         try:
             # setting the third value to zero preserves background image
+            tk.sendCommand('drift_correction_rpt_error 10.0')
             tracker.doDriftCorrect(x, y, 0, 0)
             tracking = 1
 
@@ -135,26 +136,35 @@ class eyelink:
 
     def calibration(self, tracker, window):
         """Provide instructions for calibration."""
-        #
-        text_Q = 'eyetracking instructions'
-        setup_question = visual.TextStim(window, text=text_Q, color = 'black', units='pix')
-        setup_question.draw()
-        window.flip()
-        # calibrate subjects gaze
+        
+        # set location for fixation cross
+        x = window.size[0]/2
+        y = window.size[1]/2         
+        
+        def display_instructions(i_text):
+            text = '%s/instruction_slides/pre_video%s.png' %(os.getcwd(), i_text)
+            screen = visual.ImageStim(window, image=text)
+            screen.draw()
+            window.flip()
+            event.waitKeys()
+
+        # prepare subject for calibration
+        display_instructions(1) 
+        # calibrate        
         tracker.doTrackerSetup()
-        text_A = 'ZERO/ONE'
-        tracker_q = visual.TextStim(window, text=text_A, color = 'black', units='pix')
-        tracker_q.draw()
+        # prepare subjects for practice
+        display_instructions(2)
+        # practice drift correction
         window.flip()
-        answer = keyboard_input.report_num(window, tracker_q)
+        core.wait(2)
+        tracker.doDriftCorrect(x,y,1,0)
+        tracker_message =  tracker.getCalibrationMessage() ; print(tracker_message)
         window.flip()
-        recalibration_trials = 0
-        text = '%s/instruction_slides/slide12.png' % os.getcwd()
-        calibration_message = visual.ImageStim(window, image=text)
-        calibration_message.draw()
-        window.flip()
-        event.waitKeys()
-        return answer, recalibration_trials
+        core.wait(1)
+        # prepare subjects for video
+        display_instructions(3)
+
+        return tracker_message
 
     def indices(self, CS_onset):
         """Define indices to punctuate experiment."""

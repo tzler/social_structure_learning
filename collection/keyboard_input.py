@@ -25,68 +25,69 @@ def calibrate(SD9, shock_key, finish_key):
             pass
     return
 
-
-def report_num(win, screen):
-    """Report numeric inputs, anticipate errors and return subject to input."""
-
+def report_num(window, screen):
+    """Take certain keyboard unputs, project onto screen, return string. """
+    
+    number = ''
     done = 0
-    count = 0
-    scale = list('    ')
-    shade = [-1, -1, -1]
 
-    while not done:
-        inputs = psychopy.event.waitKeys()
-
-        # if they press return
-        if inputs[0] == 'return':
-
-            # make sure there's some number in the scale
-            try:
-                # this will error out if not an integer
-                int(scale[0])
-                done = 1
-
-            except:
-                scale = list('    ')
-                count = 0
-                done = 0
-                text = psychopy.visual.TextStim(win=win, text='', color=shade)
-
-        # if they pressed delete reset
-        elif numpy.logical_or(inputs[0] == 'backspace', inputs[0] == 'space'):
-            scale = list('    ')
-            count = 0
-            done = 0
-            text = psychopy.visual.TextStim(win=win, text='', color=shade)
-
-        else:
-
-            try:
-                # check if they entered numbers
-                type(int(inputs[0])) == int
-                scale[count] = inputs[0]
-                count = count + 1
-                value = int("".join(scale[0:count]))
-                text = psychopy.visual.TextStim(win=win, text=value, color=shade, height=50)
-                text.pos = (0.0, -350)
-                # catch error if they go over 100
-
-                if int("".join(scale)) > 100:
-                    text = psychopy.visual.TextStim(win=win, text='    ', color=shade, height=40)
-                    scale = list('    ')
-                    count = 0
-                    text.pos = (0.0, -350)
-
-            # incase they entered another key
-            except ValueError:
-
-                text = psychopy.visual.TextStim(win=win, text='   ', color=shade, height=40)
-                text.pos = (0.0, -350)
-
+    # for legibility throughout, define function
+    def draw_text(window, screen, inputs):
+        col = [-1, -1, -1]
+        text = visual.TextStim(win=window, text=inputs, color=col, height=40)
+        text.pos = (0.0, -350)
         screen.draw()
         text.draw()
-        win.flip()
-    return value
+        window.flip()
+
+    while not done:
+
+        # visualize inputs to keyboard on top of instructions
+        draw_text(window, screen, number)
+
+        # wait for inputs
+        keys = psychopy.event.waitKeys()
+
+        # conditions on displaying and collecting inputs
+        if keys[0] == 'backspace':
+            # delete string
+            number = ''
+
+        elif keys[0] == 'space':
+            # not necessary, but it's cute
+            number = number
+
+        elif keys[0] == 'period':
+            # not necessary, but cute
+            number = number + '.'
+        
+        elif (keys[0] == 'return'):
+
+            # when subjects choose to submit their input, inspect it
+
+            try:           
+                
+                # error and restart if they enter a string
+                number = float(number) 
+                if number <= 100: 
+                    final_answer = number
+                    done = 1
+                else: 
+                    number = ''    
+            except: 
+                number = ''
+        
+        elif len(keys[0]) == 1: #and type(keys[0]) == int:
+            
+            try: 
+                int(keys[0])
+                number = number + keys[0]
+            except: 
+                pass
+
+    return final_answer
+    
+
 
 
 def report_word(window, screen):

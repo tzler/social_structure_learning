@@ -1,6 +1,7 @@
 """Search through old subject_names and find a new one."""
 
 import os
+
 base_dir = os.getcwd()
 old_names = os.listdir('%s/self_report_data/' % base_dir)
 

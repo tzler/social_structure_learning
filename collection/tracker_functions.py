@@ -10,7 +10,7 @@ class eyelink:
     def __init__(self, tracker, subject_id):
         """Initialize the Eyelink 1000 and set some initial parameters."""
         self.tracker = tracker # pylink.EyeLink('100.1.1.1')
-        self.calibration_type = 'HV9'  # could also be H3, HV3, HV5, HV13
+        self.calibration_type =  'HV5' # 'HV9'  # could also be H3, HV3, HV5, HV13
         self.screen_height = 1080
         self.screen_width = 1920
         self.sample_rate = 500
@@ -113,17 +113,15 @@ class eyelink:
         dot.draw()
         # present background with overlayed fixation point
         win.flip()
-
+      
         try:
             # setting the third value to zero preserves background image
-            tk.sendCommand('drift_correction_rpt_error 10.0')
+            tracker.sendCommand('drift_correction_rpt_error 20.0')
             tracker.doDriftCorrect(x, y, 0, 0)
+            message = tracker.getCalibrationMessage() 
             tracking = 1
-
         except:
-
             tracking = 0
-            print('ending tracking')
 
         # start recording
         tracker.setOfflineMode()
@@ -146,23 +144,42 @@ class eyelink:
             screen = visual.ImageStim(window, image=text)
             screen.draw()
             window.flip()
-            event.waitKeys()
-
+            subject_response = event.waitKeys()[0]
+            print 'subject_response1', subject_response
+            return subject_response
+       
+        def practice_drift_correction():     
+            time_before_dot = 2
+            time_after_dot = 1
+            window.flip() 
+            core.wait(time_before_dot)
+            tracker.doDriftCorrect(x,y,1,0)
+            tracker_message = tracker.getCalibrationMessage() ; 
+            window.flip() 
+            core.wait(time_after_dot)
+            return tracker_message 
         # prepare subject for calibration
         display_instructions(1) 
-        # calibrate        
-        tracker.doTrackerSetup()
-        # prepare subjects for practice
-        display_instructions(2)
-        # practice drift correction
-        window.flip()
-        core.wait(2)
-        tracker.doDriftCorrect(x,y,1,0)
-        tracker_message =  tracker.getCalibrationMessage() ; print(tracker_message)
-        window.flip()
-        core.wait(1)
-        # prepare subjects for video
-        display_instructions(3)
+ 
+        def setup_tracker():
+            # calibrate        
+            tracker.doTrackerSetup()
+            # prepare subjects for practice
+            display_instructions(2)
+            display_instructions(3)
+            # go through practice drift correction
+            tracker_message = practice_drift_correction()
+            # prepare subjects for video
+            subject_response = display_instructions(4)
+            print type(subject_response), 'subject_response', subject_response
+            return subject_response[0], tracker_message
+         
+        setup_complete = 0 
+        while setup_complete != 'c':
+            setup_complete, tracker_message = setup_tracker()
+            print 'setup_complete ', setup_complete, type(setup_complete) 
+        display_instructions(5)
+        display_instructions(6)
 
         return tracker_message
 

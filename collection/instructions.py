@@ -14,8 +14,8 @@ shock_key = 'space'
 finish_key = 'return'
 
 # timing for white screen around final shock in the absence of control.
-time_before_shock = 2
-time_after_shock = 1
+time_before_shock = 0
+time_after_shock = 0
 
 # create empty dictionary for self report answers + time details
 self_report = {}
@@ -35,7 +35,7 @@ def run():
     """Provide instructions, self-calibration shock, and self-report."""
     # mostly finished, aside from updating the slides
 
-    for iText in range(1, 12):
+    for iText in range(1, 13):
 
         # load instructions
         text = '%s/instruction_slides/day1_slide%s.png' % (getcwd(), iText)
@@ -46,7 +46,7 @@ def run():
         win.flip()
 
         # for simple instruction slides present text and wait for keypress
-        if iText in [1, 2, 3, 4, 5, 11]:
+        if iText in [1, 2, 3, 4, 5, 11, 12]:
             event.waitKeys()
 
         # self calibration
@@ -69,11 +69,8 @@ def run():
         elif iText == 10:
             self_report['voltage'] = keyboard_input.report_num(win, screen)
 
-    SD9.close()
-
-    text_Q = 'instructions for using the eyetracker'
-    setup_question = visual.TextStim(win, text=text_Q, units='pix')
-    setup_question.draw()
+    
     win.flip()
-
+    SD9.close()
+    
     return self_report, win

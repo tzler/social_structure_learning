@@ -10,14 +10,14 @@ class eyelink:
     def __init__(self, tracker, subject_id):
         """Initialize the Eyelink 1000 and set some initial parameters."""
         self.tracker = tracker # pylink.EyeLink('100.1.1.1')
-        self.calibration_type =  'HV5' # 'HV9'  # could also be H3, HV3, HV5, HV13
+        self.calibration_type = 'HV9'  # could also be H3, HV3, HV5, HV13
         self.screen_height = 1080
         self.screen_width = 1920
         self.sample_rate = 500
         self.data_folder = os.getcwd() + '/gaze_data/'
         self.data_file_name = subject_id + '.EDF'
         # variables to be loaded from in the script
-        self.video_path = os.getcwd() + '/audio_visual/short_trimmed.mp4'
+        self.video_path = os.getcwd() + '/audio_visual/model_full.MP4'
 
     def eye_tracker_setup(self):
         """Set up the tracker."""
@@ -49,7 +49,7 @@ class eyelink:
         self.tracker.sendCommand("link_sample_data = LEFT,RIGHT,GAZE,GAZERES,AREA,HREF,PUPIL,STATUS,INPUT,HTARGET")
         return
 
-    def monitor_setup(self, window):
+    def movie_setup(self, window):
         """Bring movie onto the monitor and connect with eyelink."""
         ## GET ACTUAL PARAMETERS FOR THESE
         scnWidth = self.screen_width
@@ -76,6 +76,26 @@ class eyelink:
         # color theme of the calibration display
 #        pylink.setCalibrationColors((255,255,255), (0,0,0))
         return window, movie
+
+    def display_setup(self, window):
+        """Bring movie onto the monitor and connect with eyelink."""
+        ## TO DO: GET ACTUAL PARAMETERS FOR THESE
+
+        scnWidth = self.screen_width
+        scnHeight = self.screen_height
+
+        window.mouseVisible = False
+        
+        #self.align_x = self.screen_width/2 - self.movie_x/2
+        #self.align_y = self.screen_height/2 - self.movie_y/2
+
+        screen_share = EyeLinkCoreGraphicsPsychoPy(self.tracker, window)
+        pylink.openGraphicsEx(screen_share)
+
+        # color theme of the calibration display
+        # pylink.setCalibrationColors((255,255,255), (0,0,0))
+        return window
+
 
 
     def align_frames(self, tracker, frame_time, frame_n, movie, time):
@@ -132,7 +152,7 @@ class eyelink:
         return mov, win, tracking
 
 
-    def calibration(self, tracker, window):
+    def calibration(self, tracker, window, day=1):
         """Provide instructions for calibration."""
         
         # set location for fixation cross
@@ -140,11 +160,12 @@ class eyelink:
         y = window.size[1]/2         
         
         def display_instructions(i_text):
-            text = '%s/instruction_slides/pre_video%s.png' %(os.getcwd(), i_text)
+            text = '%s/instruction_slides/day%s_pre_video%s.png' %(os.getcwd(), day, i_text)
             screen = visual.ImageStim(window, image=text)
             screen.draw()
             window.flip()
             subject_response = event.waitKeys()[0]
+            window.flip()
             print 'subject_response1', subject_response
             return subject_response
        
@@ -158,6 +179,7 @@ class eyelink:
             window.flip() 
             core.wait(time_after_dot)
             return tracker_message 
+
         # prepare subject for calibration
         display_instructions(1) 
  
@@ -177,7 +199,16 @@ class eyelink:
         setup_complete = 0 
         while setup_complete != 'c':
             setup_complete, tracker_message = setup_tracker()
-            print 'setup_complete ', setup_complete, type(setup_complete) 
+            print 'output from setup_tracker', setup_complete, type(setup_complete)
+
+            try: 
+                if int(setup_complete) in [3, 5, 9, 13]:   
+                    self.calibration_type =  'HV%s' %setup_complete # default is 'HV9'  # could also be H3, HV3, HV5, HV13
+                    self.tracker.sendCommand("calibration_type = " + self.calibration_type) 
+                    print 'changing calibration type', type(setup_complete), setup_complete
+            except: 
+                print 'non integer input', setup_complete
+
         display_instructions(5)
         display_instructions(6)
 

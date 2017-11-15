@@ -1,12 +1,11 @@
-"""Module within 'experiment_main' for presenting video + signaling physio."""
-# converting EDF files, converting "night", for example
-# $ /Applications/Eyelink/EDF_Access_API/Example/edf2asc night.EDF
+"""Module within 'experiment' for presenting video + signaling physio."""
 
 from psychopy import core, event, visual
+import pylink, os
+# in house functions
 import experiment_ports
 import tracker_functions
-import design_parameters as params  # my functions
-import pylink, os
+import design_parameters as params 
 
 # set key for subjects to pause during experiment
 exit_key = 'w'
@@ -15,7 +14,7 @@ wait_time = 0
 # set time before CS that tracker should drift correct and/or reset
 window_before_CS = 2
 # set n_stimuli presented before the next drift correction
-drift_interval = 1
+drift_interval = 10
 
 
 def run(self_report, window, subject_id):
@@ -39,7 +38,7 @@ def run(self_report, window, subject_id):
     tracker_onset, isi_count, frame_n, frame_t, time_i = link.indices(CS_onset)
 
     # set up monitors between eyelink and this computer
-    window, movie = link.monitor_setup(window)
+    window, movie = link.movie_setup(window)
     frame_time = movie.getCurrentFrameTime
 
     # wait for a given interval so subjects physiological respones "settle"
@@ -65,7 +64,7 @@ def run(self_report, window, subject_id):
     time = core.Clock()
     time.reset()
 
-    while time_i < 60:  # movie.status != visual.FINISHED:
+    while time_i < 5: # movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground

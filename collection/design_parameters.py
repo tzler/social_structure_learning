@@ -14,13 +14,26 @@ def intervals():
 
 def design():
     """Define experimental structure that matches stimuli in video."""
-    isi = [9,5,7,5,7,7,5,7,7,5,5,5,5,7,5,7,5,5,7,5,7,5,7,5,7,5,7,5,5,7,7,5,7,7,5,7,5,7,7,5,5,7,7,5,7]
-    CS  = [1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,0,0,1]
-    US  = [1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    # these are wrong! especially towards the end. make sure they're correct :) 
+    isi = [9,5,7,5,7,7,5,7,7,5,5,5,5,7,5,7,5,5,7,5,7,5,7,5,7,5,7,5,5,7,7,5,7,7,5,7,5,7,7,5,5,7,7,5,7,5,7,5]
+    CS  = [1,0,0,1,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,0,0,1,0,0,1,0,0,0]
+    US  = [1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     # temporary conversion for inputing CS vector into biopac.CS(CS) swap 0s and 1s
     CS = np.abs(np.array(CS)-1)
     return isi, CS, US
 
+def stimulus_parameters(): 
+
+    colors  = [[-1,-1, 1],  # blue 
+               [ 1,-1,-1]]  # red
+
+    # set presentation order (of red and blue)
+    cs  = [0,1]  
+    iti = [5,7]  
+    
+    cs_type = ['+', '-']        
+
+    return cs, cs_type, colors, iti
 
 def indices(isi, stimulus_length):
     # set indices for triggering biopac

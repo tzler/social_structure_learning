@@ -14,8 +14,8 @@ shock_key = 'space'
 finish_key = 'return'
 
 # timing for white screen around final shock in the absence of control.
-time_before_shock = 0
-time_after_shock = 0
+time_before_shock = 3
+time_after_shock = 1
 
 # create empty dictionary for self report answers + time details
 self_report = {}
@@ -38,7 +38,7 @@ def run():
     for iText in range(1, 13):
 
         # load instructions
-        text = '%s/instruction_slides/day1_slide%s.png' % (getcwd(), iText)
+        text = '%s/instruction_slides/day1_intro%s.png' % (getcwd(), iText)
 
         # present instructions
         screen = visual.ImageStim(win, image=text)

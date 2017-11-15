@@ -1,0 +1,35 @@
+"""Final behavioral questions before ending experiment on day one."""
+
+from psychopy import visual, event
+import keyboard_input as inputs
+from numpy import save
+from os import getcwd
+
+questions = ['feel_self', 'color','belief', 'exit']
+
+def run(win, self_report, subject_id):
+    """Ask exit questions, save data."""
+    # mostly finished at this point.
+
+    for Q_i in range(0, len(questions)):
+
+        slide = '%s/instruction_slides/day2_post%s.png' % (getcwd(), Q_i + 1)
+        text = visual.ImageStim(win, image=slide)
+        text.draw()
+        win.flip()
+
+        if Q_i in [0, 2, 3]:
+            # TO DO: fix this, it allows a space for an answer ...
+            self_report['%s' % questions[Q_i]] = inputs.report_num(win, text)
+
+        elif Q_i == 1:
+            self_report['%s' % questions[Q_i]] = inputs.report_word(win, text)
+
+    file_name = '%s/self_report_data/%s.npy' % (getcwd(), subject_id)
+    save(file_name, self_report)
+    event.waitKeys()
+
+    win.flip()
+    event.waitKeys()
+    win.close()
+    print self_report

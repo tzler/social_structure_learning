@@ -38,15 +38,7 @@ def run(self_report, window, subject_id):
     tracker_onset, isi_count, frame_n, frame_t, time_i = link.indices(CS_onset)
 
     # set up monitors between eyelink and this computer
-    window, movie = link.movie_setup(window)
-    frame_time = movie.getCurrentFrameTime
-
-    # wait for a given interval so subjects physiological respones "settle"
-    core.wait(wait_time)
-
-    # calibrate subjects, determine whether we're using their gaze data
-    link.calibration(tracker, window)
-    # tmp code, but this is what we need to present here
+    window, movie, frame_time = link.movie_setup(window)
 
     # connect to biopac
     biopac = experiment_ports.biopac()
@@ -56,15 +48,20 @@ def run(self_report, window, subject_id):
 
     # begin experiment: recording physio data and presenting video
     biopac.begin()
+    
+    # wait for a given interval so subjects physiological respones "settle"
+    core.wait(wait_time)
 
+    # calibrate subjects
+    link.calibration(tracker, window)
+    
     # start recording eyegaze
     link.initiate(tracker)
 
     # set time to zero and start
     time = core.Clock()
-    time.reset()
 
-    while time_i < 5: # movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
+    while movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground

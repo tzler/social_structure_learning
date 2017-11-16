@@ -68,6 +68,10 @@ class SD9:
         """Close Port."""
         self.SD9.close()
 
+    def open(self):
+        """Open Port."""
+        self.SD9.open()
+
 
 class biopac:
     """Signals stimulus information to biopack."""
@@ -108,3 +112,9 @@ class biopac:
     def end(self):
         """Signal end of experiment to biopac."""
         self.biopac.write('88')
+
+    def open(self): 
+        self.biopac.open()
+
+    def close(self):
+        self.biopac.close()

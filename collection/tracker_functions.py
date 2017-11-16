@@ -10,7 +10,7 @@ class eyelink:
     def __init__(self, tracker, subject_id):
         """Initialize the Eyelink 1000 and set some initial parameters."""
         self.tracker = tracker # pylink.EyeLink('100.1.1.1')
-        self.calibration_type = 'HV9'  # could also be H3, HV3, HV5, HV13
+        self.calibration_type = 'HV5'  # could also be H3, HV3, HV9, HV13
         self.screen_height = 1080
         self.screen_width = 1920
         self.sample_rate = 500
@@ -47,6 +47,7 @@ class eyelink:
         self.tracker.sendCommand("link_event_filter = LEFT,RIGHT,FIXATION,SACCADE,BLINK,BUTTON,INPUT")
         self.tracker.sendCommand("file_sample_data = LEFT,RIGHT,GAZE,GAZERES,AREA,HREF,PUPIL,STATUS,INPUT,HTARGET")
         self.tracker.sendCommand("link_sample_data = LEFT,RIGHT,GAZE,GAZERES,AREA,HREF,PUPIL,STATUS,INPUT,HTARGET")
+        self.tracker.sendCommand('drift_correction_rpt_error 20.0')
         return
 
     def movie_setup(self, window):
@@ -54,13 +55,6 @@ class eyelink:
         ## GET ACTUAL PARAMETERS FOR THESE
         scnWidth = self.screen_width
         scnHeight = self.screen_height
-
-        # """load movie onto background."""
-        # window = visual.Window([x_size, y_size], fullscr=fullscreen, units="pix", color=[1, 1, 1])
-        #mon = monitors.Monitor('myMac15', width=32.0, distance=57.0)
-        #mon.setSizePix((scnWidth, scnHeight))
-        # set up generic screen background
-        #window = visual.Window((scnWidth, scnHeight), fullscr=1, monitor=mon, color=[0,0,0], units='pix')
 
         window.mouseVisible = False
         # set up movie
@@ -73,9 +67,11 @@ class eyelink:
         # callcustom calibrationmethod to coordinate screens
         screen_share = EyeLinkCoreGraphicsPsychoPy(self.tracker, window)
         pylink.openGraphicsEx(screen_share)
+        
+        frame_time = movie.getCurrentFrameTime
         # color theme of the calibration display
 #        pylink.setCalibrationColors((255,255,255), (0,0,0))
-        return window, movie
+        return window, movie, frame_time
 
     def display_setup(self, window):
         """Bring movie onto the monitor and connect with eyelink."""
@@ -91,9 +87,7 @@ class eyelink:
 
         screen_share = EyeLinkCoreGraphicsPsychoPy(self.tracker, window)
         pylink.openGraphicsEx(screen_share)
-
-        # color theme of the calibration display
-        # pylink.setCalibrationColors((255,255,255), (0,0,0))
+        pylink.setTargetSize(int(surf.get_rect().w/150), int(surf.get_rect().w/500)); 
         return window
 
 
@@ -166,7 +160,6 @@ class eyelink:
             window.flip()
             subject_response = event.waitKeys()[0]
             window.flip()
-            print 'subject_response1', subject_response
             return subject_response
        
         def practice_drift_correction():     
@@ -190,24 +183,24 @@ class eyelink:
             display_instructions(2)
             display_instructions(3)
             # go through practice drift correction
-            tracker_message = practice_drift_correction()
+            try: 
+              tracker_message = practice_drift_correction()
+            except: 
+              tracker_message = ''
             # prepare subjects for video
             subject_response = display_instructions(4)
-            print type(subject_response), 'subject_response', subject_response
             return subject_response[0], tracker_message
          
         setup_complete = 0 
-        while setup_complete != 'c':
+        while setup_complete != '0':
             setup_complete, tracker_message = setup_tracker()
-            print 'output from setup_tracker', setup_complete, type(setup_complete)
 
             try: 
                 if int(setup_complete) in [3, 5, 9, 13]:   
                     self.calibration_type =  'HV%s' %setup_complete # default is 'HV9'  # could also be H3, HV3, HV5, HV13
                     self.tracker.sendCommand("calibration_type = " + self.calibration_type) 
-                    print 'changing calibration type', type(setup_complete), setup_complete
             except: 
-                print 'non integer input', setup_complete
+                pass 
 
         display_instructions(5)
         display_instructions(6)

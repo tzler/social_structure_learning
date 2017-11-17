@@ -5,22 +5,16 @@ import instructions
 import stimuli
 import exit_questions
 
-# TO DO: fix this warning: Class SDLTranslatorResponder is implemented in both /Users/ssnl_booth2/anaconda/envs/experimental/lib/python2.7/site-packages/pygame/.dylibs/libSDL-1.2.0.dylib and /Library/Frameworks/SDL.framework/Versions/A/SDL. One of the two will be used. Which one is undefined.
-# TO DO: fix this warning: User requested fullscreen with size [800 600], but screen is actually [1920, 1080]. Using actual size
-# TO DO: fix this warning: pyo audio lib was requested but not loaded: ImportError('No module named pyo',)
-# TO DO: figure out day two: video recorder to see if they check their hands
-# TO DO: figure out day two:
-# TO DO: figure out day two:
-# TO DO: figure out day two:
 
-subject_id = name_subject.new()
+self_report = {}
+# name subject from command line argument, else autoname and pass error
+subject_id, self_report['name_error'] = name_subject.command_line()
 
 
-def run_subject(subject_id):
+def run_subject(subject_id, self_report):
     """Run experiment for one subject."""
-    #
 
-    self_report, window = instructions.run()
+    self_report, window = instructions.run(self_report)
 
     """
     'instructions' presents slides stored in instructions/; subjects
@@ -28,7 +22,6 @@ def run_subject(subject_id):
     their experience, passed on in 'self_report'
     """
 
-    # TO DO: fix bug with stimulus markers being sent to eyelink
     # TO DO: check biopac-gaze-video alignment across entire experiment
     # TO DO: make sure the laggy video is just processing speed
     # TO DO: update stimuli markers to reflect ACTUAL design
@@ -41,8 +34,6 @@ def run_subject(subject_id):
     conductance and saves in neuroview, eyelink data saved in gaze_data/.
     """
 
-    # TO DO: fix bug with color question -- it allows spaces as answers
-    # TO DO: make sure we dont override previous subjects data
     exit_questions.run(window, self_report, subject_id)
 
     """
@@ -52,4 +43,14 @@ def run_subject(subject_id):
 
 
 if __name__ == "__main__":
-    run_subject(subject_id)
+    run_subject(subject_id, self_report)
+
+
+# TO DO: fix this warning: Class SDLTranslatorResponder is implemented in both /Users/ssnl_booth2/anaconda/envs/experimental/lib/python2.7/site-packages/pygame/.dylibs/libSDL-1.2.0.dylib and /Library/Frameworks/SDL.framework/Versions/A/SDL. One of the two will be used. Which one is undefined.
+# TO DO: fix this warning: User requested fullscreen with size [800 600], but screen is actually [1920, 1080]. Using actual size
+# TO DO: fix this warning: pyo audio lib was requested but not loaded: ImportError('No module named pyo',)
+
+
+# TO DO: figure out day two: video recorder to see if they check their hands
+
+

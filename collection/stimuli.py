@@ -61,7 +61,7 @@ def run(self_report, window, subject_id):
     # set time to zero and start
     time = core.Clock()
 
-    while movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
+    while time_i < 5 : #movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground

@@ -17,11 +17,6 @@ finish_key = 'return'
 time_before_shock = 3
 time_after_shock = 1
 
-# create empty dictionary for self report answers + time details
-self_report = {}
-begin = datetime.datetime.now()
-self_report['time'] = begin.strftime('experiment began at %H:%M on %m/%d/%Y')
-
 # open port for shock. must wait if used immediately, e.g. 'core.wait(2)'
 SD9 = experiment_ports.SD9()
 
@@ -31,8 +26,13 @@ win = visual.Window(fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
 win.mouseVisible = False
 
 
-def run():
+def run(self_report):
     """Provide instructions, self-calibration shock, and self-report."""
+    
+    # create empty dictionary for self report answers + time details
+    begin = datetime.datetime.now()
+    self_report['time'] = begin.strftime('experiment began at %H:%M on %m/%d/%Y')
+
     # mostly finished, aside from updating the slides
 
     for iText in range(1, 13):

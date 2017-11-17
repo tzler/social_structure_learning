@@ -81,13 +81,10 @@ class eyelink:
         scnHeight = self.screen_height
 
         window.mouseVisible = False
-        
-        #self.align_x = self.screen_width/2 - self.movie_x/2
-        #self.align_y = self.screen_height/2 - self.movie_y/2
 
         screen_share = EyeLinkCoreGraphicsPsychoPy(self.tracker, window)
         pylink.openGraphicsEx(screen_share)
-        pylink.setTargetSize(int(surf.get_rect().w/150), int(surf.get_rect().w/500)); 
+#        pylink.setTargetSize(int(surf.get_rect().w/150), int(surf.get_rect().w/500)); 
         return window
 
 

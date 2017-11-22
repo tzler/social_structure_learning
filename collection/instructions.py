@@ -22,7 +22,7 @@ SD9 = experiment_ports.SD9()
 
 # set stimulus background and remove mouse visibility
 monitor = 'testmonitor'
-win = visual.Window(fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
+win = visual.Window([1500,800], fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
 win.mouseVisible = False
 
 

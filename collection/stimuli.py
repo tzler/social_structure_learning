@@ -1,12 +1,15 @@
 """Module within 'experiment' for presenting video + signaling physio."""
 
+from __future__ import division, print_function
+from psychopy import visual, logging 
 from psychopy import core, event, visual
-import pylink, os
+import pylink, os, numpy
 # in house functions
 import experiment_ports
 import tracker_functions
 import design_parameters as params 
-
+from numpy import floor, sum
+   
 # set key for subjects to pause during experiment
 exit_key = 'w'
 # set time to wait for subjects' physiology to "settle"
@@ -14,7 +17,9 @@ wait_time = 0
 # set time before CS that tracker should drift correct and/or reset
 window_before_CS = 2
 # set n_stimuli presented before the next drift correction
-drift_interval = 10
+drift_interval = 1
+# 
+movie_offset_time = .8
 
 
 def run(self_report, window, subject_id):
@@ -53,15 +58,32 @@ def run(self_report, window, subject_id):
     core.wait(wait_time)
 
     # calibrate subjects
-    link.calibration(tracker, window)
+    #link.calibration(tracker, window)
     
     # start recording eyegaze
     link.initiate(tracker)
 
     # set time to zero and start
     time = core.Clock()
+    
+    # adjust timing to align with stimuli in video
+#    core.wait(movie_offset_time)
 
-    while time_i < 5 : #movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
+    window.recordFrameIntervals = True
+    window.refreshThreshold = 1/30 + 0.004
+    logging.console.setLevel(logging.WARNING)
+    n_frame_intervals = 0
+    diff = 0 
+    time_i = 0
+
+#    t_0 = movie.getCurrentFrameTime()
+#    movie.draw()
+#    t_1 = movie.getCurrentFrameTime()
+#    df_dt = t_1 - t_0
+#    frame_rate = round(1 / df_dt,2)
+
+
+    while  movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground
@@ -69,11 +91,22 @@ def run(self_report, window, subject_id):
         # update frame time
         frame_t = frame_time()
         # only catch first instance
-        time_i = round(frame_t)
-
+        time_i = floor(frame_t)
+        
+        ############ NOW JUMBLED TROUBLESHOOTING ALIGNMENT OF BIOPAC WITH VIDEO ############
+        # interval = window.frameIntervals[n_frame_intervals:]
+        # diff = diff + sum(interval) - (len(interval) * (1/60))
+        # print('frame_t: %.02f'%frame_t, 'time elapsed: %.02f' %time.getTime(), 'difference: %.02f' %(frame_t- time.getTime()))
+        # 'n frames:', len(window.frameIntervals), 'difference from average: %.04f'%diff, 'len interval', len(interval))   
+        #time.add(diff)
+        #time_i = floor(frame_t)#  + diff)
+        # n_frame_intervals = len(window.frameIntervals)
+        ########################################################################
+        
+        
         # send time and position data to tracker for later visualization
         frame_n = link.align_frames(tracker, frame_t, frame_n, movie, time)
-
+        
         # signal CS onset
         if (time_i == CS_onset):
 
@@ -112,9 +145,12 @@ def run(self_report, window, subject_id):
             tracker_onset = -1
 
             # drift correct every so often
-            if ((isi_count + 1) % drift_interval) == 0:
-
-                movie, window, tracking = link.drift(tracker, movie, window)
+            if ((isi_count + 1) % drift_interval) == 0:   
+              
+              biopac.end() 
+              try: movie, window  = link.drift(tracker, movie, window)
+              except: pass 
+              biopac.begin()
 
             # message eye tracker the isi count
             tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
@@ -125,24 +161,25 @@ def run(self_report, window, subject_id):
             isi_count = isi_count + 1
 
         # collect key presses
-        keyPressed = event.getKeys()
-        # if exit key was pressed, end video
-        if keyPressed:
-            if (keyPressed[0] == 'e'):
-                prompt = 'not using eyetracker during the experiment'
-                notice = visual.TextStim(window, text=prompt, color='black', units='pix')
-                notice.draw()
-                window.flip()
-                core.wait(1)
-                tracking = 0
-            elif (keyPressed[0] == 'q'):
-                visual.FINISHED = 1
+        # keyPressed = event.getKeys()
+        ### if exit key was pressed, end video
+        #if keyPressed:
+        #    if (keyPressed[0] == 'e'):
+        #        prompt = 'not using eyetracker during the experiment'
+        #        notice = visual.TextStim(window, text=prompt, color='black', units='pix')
+        #        notice.draw()
+        #        window.flip()
+        #        core.wait(1)
+        #        tracking = 0
+        #    elif (keyPressed[0] == 'q'):
+        #        visual.FINISHED = 1
 
 
     # end video, transfer eye_tracker data, close tracker and biopac
     link.close(tracker)
     biopac.end()
-
+    self_report['frame_intervals'] = window.frameIntervals
+    print('\n\n\n%i frames were dropped.' % window.nDroppedFrames)
     return self_report, window
 
 

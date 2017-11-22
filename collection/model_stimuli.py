@@ -8,7 +8,7 @@ nSecondDisplay = 4
 # set time to display stimulus after shock -- within nSecondDesplay timeframe
 nTrace = 1 
 # set opening pause time
-openPause = 0
+openPause =10 
 ###########################################
 
 # open port for shock. must wait if used immediately, e.g. 'core.wait(2)'#

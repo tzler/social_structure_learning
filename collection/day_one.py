@@ -5,6 +5,14 @@ import instructions
 import stimuli
 import exit_questions
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# TO DO: work on alignment                                                      # 
+# TO DO: which  video should we use?                                            # 
+# TO DO: switch CSs in design parameters so it triggers the biopac correctly    # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+
+
 
 self_report = {}
 # name subject from command line argument, else autoname and pass error
@@ -22,9 +30,6 @@ def run_subject(subject_id, self_report):
     their experience, passed on in 'self_report'
     """
 
-    # TO DO: check biopac-gaze-video alignment across entire experiment
-    # TO DO: make sure the laggy video is just processing speed
-    # TO DO: update stimuli markers to reflect ACTUAL design
     self_report, window = stimuli.run(self_report, window, subject_id)
 
     """

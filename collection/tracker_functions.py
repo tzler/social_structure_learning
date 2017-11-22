@@ -17,8 +17,9 @@ class eyelink:
         self.data_folder = os.getcwd() + '/gaze_data/'
         self.data_file_name = subject_id + '.EDF'
         # variables to be loaded from in the script
-        self.video_path = os.getcwd() + '/audio_visual/model_full.MP4'
-
+        # self.video_path = os.getcwd() + '/audio_visual/trim_test.MP4'
+        self.video_path = '/Users/ssnl_booth2/Desktop/model_experiment_two.MP4'
+        # self.video_path = '/Users/ssnl_booth2/Desktop/model_sans_audio.mov'
     def eye_tracker_setup(self):
         """Set up the tracker."""
         # # # # # # # # # # # # # # # # #
@@ -58,7 +59,7 @@ class eyelink:
 
         window.mouseVisible = False
         # set up movie
-        movie = visual.MovieStim3(window, self.video_path, flipVert=False)
+        movie = visual.MovieStim3(window, self.video_path, flipVert=False, flipHoriz=False, noAudio=True, loop=False)
         self.movie_x, self.movie_y = movie.size
 
         self.align_x = self.screen_width/2 - self.movie_x/2
@@ -92,7 +93,7 @@ class eyelink:
     def align_frames(self, tracker, frame_time, frame_n, movie, time):
         """Send x & y coordinates to EYELINK for data visualization later."""
         # set path to video and and message
-        path = '../audio_visual/short_trimmed.mp4'
+        path = self.video_path # needs to be in relative path , eg '../audio_visual/short_trimmed.mp4'
         # determine time of current frame
         frame_current = movie.getCurrentFrameTime()
         # determine x and y coordinates
@@ -110,6 +111,8 @@ class eyelink:
 
     def drift(self, tracker, mov, win):
         """Perform drift correction over paused video."""
+        
+        # mov.pause()
         # take the tracker offline
         tracker.setOfflineMode()
         pylink.pumpDelay(50)
@@ -120,27 +123,27 @@ class eyelink:
         # set next frame in background
         mov.draw()
         # create and present dot on background
-        dot = stim(win, tex='none', mask='circle', size=18, color=[-1, 1, 1])
-        dot.draw()
+        dot1 = stim(win, tex='none', mask='circle', size=5, color=[ 1,  1,  1]) 
+        dot2 = stim(win, tex='none', mask='circle', size=25, color=[-1, -1, -1])
+        dot2.draw()
+        dot1.draw()
         # present background with overlayed fixation point
         win.flip()
-      
+        
         try:
             # setting the third value to zero preserves background image
             tracker.sendCommand('drift_correction_rpt_error 20.0')
             tracker.doDriftCorrect(x, y, 0, 0)
-            message = tracker.getCalibrationMessage() 
-            tracking = 1
+            tracker.getCalibrationMessage() 
         except:
-            tracking = 0
+            pass
 
         # start recording
         tracker.setOfflineMode()
         pylink.pumpDelay(50)
         tracker.startRecording(1, 1, 1, 1)
         pylink.pumpDelay(50) # wait for 100 ms to make sure data of interest is recorded
-
-        return mov, win, tracking
+        return mov, win
 
 
     def calibration(self, tracker, window, day=1):
@@ -165,10 +168,10 @@ class eyelink:
             window.flip() 
             core.wait(time_before_dot)
             tracker.doDriftCorrect(x,y,1,0)
-            tracker_message = tracker.getCalibrationMessage() ; 
+            tracker.getCalibrationMessage() ; 
             window.flip() 
             core.wait(time_after_dot)
-            return tracker_message 
+            return 
 
         # prepare subject for calibration
         display_instructions(1) 
@@ -181,16 +184,16 @@ class eyelink:
             display_instructions(3)
             # go through practice drift correction
             try: 
-              tracker_message = practice_drift_correction()
+                practice_drift_correction()
             except: 
-              tracker_message = ''
+                pass  
             # prepare subjects for video
             subject_response = display_instructions(4)
-            return subject_response[0], tracker_message
+            return subject_response[0]
          
         setup_complete = 0 
         while setup_complete != '0':
-            setup_complete, tracker_message = setup_tracker()
+            setup_complete = setup_tracker()
 
             try: 
                 if int(setup_complete) in [3, 5, 9, 13]:   
@@ -202,7 +205,7 @@ class eyelink:
         display_instructions(5)
         display_instructions(6)
 
-        return tracker_message
+        return
 
     def indices(self, CS_onset):
         """Define indices to punctuate experiment."""

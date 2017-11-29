@@ -15,12 +15,12 @@ delay_time = 10
 # set time to present each stimulus     
 n_second_display = 4
 
-def run(self_report, window, subject_id):
+def run(self_report, window):
     """Present video, collect SCR and gaze data, align with video."""
     
     # connect to eye tracker
     tracker = pylink.EyeLink('100.1.1.1')
-    link = tracker_functions.eyelink(tracker, subject_id)
+    link = tracker_functions.eyelink(tracker, self_report['subject_id'])
     link.eye_tracker_setup()
 
     # Open an EDF file to store gaze data -- name cannot exceeds 8 characters

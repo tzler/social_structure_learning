@@ -5,10 +5,10 @@ import keyboard_input as inputs
 from numpy import save
 from os import getcwd
 
-questions = ['color', 'pain_other', 'pain_self_obs', 'relate', 'familiar', 'exit']
+questions = ['color', 'pain_other', 'pain_self_obs', 'relate', 'familiar', 'experimenter_id']
 
 
-def run(win, self_report, subject_id):
+def run(win, self_report):
     """Ask exit questions, save data."""
     # mostly finished at this point.
 
@@ -27,11 +27,13 @@ def run(win, self_report, subject_id):
             self_report['%s' % questions[Q_i]] = inputs.report_num(win, text)
 
         elif Q_i == 5:
-            file_name = '%s/self_report_data/%s.npy' % (getcwd(), subject_id)
-            save(file_name, self_report)
             event.waitKeys()
-
-    win.flip()
-    event.waitKeys()
+            win.flip()
+            text = visual.TextStim(win, text='')
+            self_report['%s' % questions[Q_i]] = inputs.report_num(win, text)
+            
+    file_name = '%s/self_report_data/%s.npy' % (getcwd(), self_report['subject_id'])
+    save(file_name, self_report)
     win.close()
-    print self_report
+
+    print '\n\nEXPERIMENT COMPLETED SUCCESSFULLY' 

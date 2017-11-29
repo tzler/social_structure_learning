@@ -20,12 +20,6 @@ time_after_shock = 1
 # open port for shock. must wait if used immediately, e.g. 'core.wait(2)'
 SD9 = experiment_ports.SD9()
 
-# set stimulus background and remove mouse visibility
-monitor = 'testmonitor'
-win = visual.Window([1500,800], fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
-win.mouseVisible = False
-
-
 def run(self_report):
     """Provide instructions, self-calibration shock, and self-report."""
     

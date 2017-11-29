@@ -17,12 +17,12 @@ wait_time = 0
 # set time before CS that tracker should drift correct and/or reset
 window_before_CS = 2
 # set n_stimuli presented before the next drift correction
-drift_interval = 1
+drift_interval = 6
 # 
 movie_offset_time = .8
 
 
-def run(self_report, window, subject_id):
+def run(self_report, window):
     """Present video, collect SCR and gaze data, align with video."""
     #
     # load parameters for timing and design of stimuli
@@ -32,7 +32,7 @@ def run(self_report, window, subject_id):
 
     # connect to eye tracker
     tracker = pylink.EyeLink('100.1.1.1')
-    link = tracker_functions.eyelink(tracker, subject_id)
+    link = tracker_functions.eyelink(tracker, self_report['subject_id'])
     link.eye_tracker_setup()
 
     # Open an EDF file to store gaze data -- name cannot exceeds 8 characters
@@ -58,7 +58,7 @@ def run(self_report, window, subject_id):
     core.wait(wait_time)
 
     # calibrate subjects
-    #link.calibration(tracker, window)
+    link.calibration(tracker, window)
     
     # start recording eyegaze
     link.initiate(tracker)
@@ -75,7 +75,7 @@ def run(self_report, window, subject_id):
     n_frame_intervals = 0
     diff = 0 
     time_i = 0
-
+    cs_type = ['+', '-']
 #    t_0 = movie.getCurrentFrameTime()
 #    movie.draw()
 #    t_1 = movie.getCurrentFrameTime()
@@ -83,7 +83,7 @@ def run(self_report, window, subject_id):
 #    frame_rate = round(1 / df_dt,2)
 
 
-    while  movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
+    while time_i < 10: #  movie.status != visual.FINISHED: # time_i < 5:  # movie.status != visual.FINISHED:
         # draw next frame
         movie.draw()
         # update foreground
@@ -134,7 +134,7 @@ def run(self_report, window, subject_id):
             # update offset time to look for
             CS_offset = CS_onset + stim_length
             # signal eye tracker
-            tracker.sendMessage('END_CS')
+            tracker.sendMessage('TRIAL_OFFSET')
 
         # drift correct with the eye tracker
         elif (time_i == tracker_onset):
@@ -153,7 +153,11 @@ def run(self_report, window, subject_id):
               biopac.begin()
 
             # message eye tracker the isi count
-            tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
+            # tracker.sendMessage('TRIAL_ONSET_' + str(isi_count))
+            tracker.sendMessage('TRIAL_ONSET_' + str(isi_count) + '_CS_TYPE=CS' + cs_type[CS[stim_i]])
+             
+            #
+            #
             # update clock to reflect time spent drift correcting
             time_unpause = time.getTime()
             time.add(time_unpause - time_pause)
@@ -161,10 +165,14 @@ def run(self_report, window, subject_id):
             isi_count = isi_count + 1
 
         # collect key presses
-        # keyPressed = event.getKeys()
+        keyPressed = event.getKeys()
         ### if exit key was pressed, end video
-        #if keyPressed:
-        #    if (keyPressed[0] == 'e'):
+        if keyPressed:
+            if (keyPressed[0] == 'w'):
+                key_pressed = event.waitKeys()
+                if key_pressed[0] == 'q': 
+                    visual.FINISHED = 1
+
         #        prompt = 'not using eyetracker during the experiment'
         #        notice = visual.TextStim(window, text=prompt, color='black', units='pix')
         #        notice.draw()
@@ -185,6 +193,7 @@ def run(self_report, window, subject_id):
 
 def next_CS(stim_i, isi, stimulus_length):
     """Tag locations of next CS, to align biopac markers with video."""
+    
     stim_i = stim_i + 1
     next_CS = sum(isi[0:stim_i + 1]) + stim_i * stimulus_length
 

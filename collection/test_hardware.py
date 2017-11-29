@@ -14,7 +14,7 @@ keyboard_input = sys.argv[-1]
 
 def SD9(): 
     
-    print 'testing SD9'
+    print 'TESTING SD9'
 
     SD9 = experiment_ports.SD9()
     
@@ -38,6 +38,8 @@ def SD9():
 
     # core.wait(2)
     win.close()
+    print 'SD9 COMPLETED SUCCESSFULLY'
+
     
 def biopac():
     
@@ -119,11 +121,12 @@ def biopac():
     SD9.close()
     biopac.end()
     background.close()
+    print 'BIOPAC COMPLETED SUCCESSFULLY'
 
  
 def eyelink(): 
     
-    print 'testing eyelink'
+    print 'TESTING EYELINK'
     subject_id = 'TEST'
     
     window = visual.Window([1920, 1080], fullscr=1, monitor="testMonitor", units="pix", color = [1,1,1])
@@ -153,6 +156,7 @@ def eyelink():
     
     # calibrate subjects
     link.calibration(tracker, window)
+    print 'EYELINK COMPLETED SUCCESSFULLY'
 
 
 def test_all_hardware():
@@ -161,7 +165,7 @@ def test_all_hardware():
     SD9()
     biopac()
     eyelink()
-
+    print '\n\n\nALL HARDWARE SUB-ROUTINES COMPLETED SUCCESSFULLY'
 if __name__ == "__main__":
 
   if __file__ == keyboard_input: 

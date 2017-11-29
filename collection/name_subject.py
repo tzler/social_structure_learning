@@ -6,34 +6,44 @@ base_dir = os.getcwd()
 old_names = os.listdir('%s/self_report_data/' % base_dir)
 
 
-def command_line(): 
+def command_line(day): 
     """If more than 8 characters : RuntimeError: Unexpected end of line.""" 
 
-   
-    possible_name = sys.argv[-1]
-    
-    print 'sys.argv from inside of function: ', sys.argv, 'possible_name =', possible_name
-     
     names_old = [] 
+    
     for name_i in old_names: 
-        if name_i.startswith("s_") and name_i.endswith(".npy"): 
-            names_old.append(name_i[0:4]) 
+        if name_i.startswith("s") and name_i.endswith("d%s.npy"%day): 
+            names_old.append(name_i[0:-4]) 
+  
+    # print 'names_old:', 
+    # print  names_old 
+     
+    if len(sys.argv) > 1:  
+        
+        possible_name = 's' + sys.argv[-1] + '_d' + str(day)
+        
+        if possible_name in names_old:
+        
+            bad_name = possible_name
+            del possible_name
+            
+        
+    if 'possible_name' in locals(): 
     
-    if 'day' in possible_name:
-        
-        new_name = "s_%02d_fix" % (len(old_names) + 1)  
-        error_msg = 'ERROR: EXPERIMENTOR FAILED TO INCLUDE SUBJECT NAME, USING %s, CHANGE AS SOON AS POSSIBLE \n' %new_name
+        new_name = possible_name 
+        error_msg = '' 
     
-    elif possible_name in names_old: 
-        
-        new_name = "s_%02d_fix" % (len(old_names) + 1)  
-        error_msg = 'ERROR: SUBJECT NAME %s ALREADY IN USE, SETTING SUBJECT NAME TO %s, CHANGE WHEN POSSIBLE\n' %(possible_name, new_name) 
-        
+    elif len(sys.argv) == 1: 
+
+        new_name = "s%02dx_d%s" % (len(old_names) + 1, day)  
+        error_msg = 'WARNING: SUBJECT NAME NOT GIVEN. SETTING SUBJECT NAME TO %s, CHANGE WHEN POSSIBLE\n' %(new_name) 
+  
     else: 
+       
+        new_name = "s%02dx_d%s" % (len(old_names) + 1, day)  
+        error_msg = 'WARNING: SUBJECT NAME %s ALREADY IN USE, SETTING SUBJECT NAME TO %s, CHANGE WHEN POSSIBLE\n' %(bad_name, new_name) 
         
-        new_name = possible_name
-        error_msg = 0
     
-    if error_msg: print '\n\n\n', 'ERROR\n'*10, error_msg, 'ERROR\n'*10, '\n\n\n'
+    if error_msg: print '\n\n\n', 'WARNING\n'*5, error_msg, 'WARNING\n'*5, '\n\n\n'
     else: print '\n\n\nNAMING CURRENT SUBJECT %s\n\n\n' %new_name 
     return new_name, error_msg

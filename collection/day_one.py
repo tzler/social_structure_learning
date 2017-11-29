@@ -4,6 +4,7 @@ import name_subject
 import instructions
 import stimuli
 import exit_questions
+from psychopy import visual
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # TO DO: work on alignment                                                      # 
@@ -11,18 +12,17 @@ import exit_questions
 # TO DO: switch CSs in design parameters so it triggers the biopac correctly    # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-
-
-
 self_report = {}
 # name subject from command line argument, else autoname and pass error
-subject_id, self_report['name_error'] = name_subject.command_line()
+self_report['subject_id'], self_report['name_error'] = name_subject.command_line(1) # TYLER ADD DAY TO INPUTS AND NAME
 
+# set stimulus background and remove mouse visibility
+window = visual.Window([1920, 1080], fullscr=1, monitor='testmonitor', units="pix", color=[1, 1, 1]) ; window.mouseVisible = False
 
-def run_subject(subject_id, self_report):
+def run_subject(self_report, window):
     """Run experiment for one subject."""
 
-    self_report, window = instructions.run(self_report)
+    self_report, window = instructions.run(self_report, window)
 
     """
     'instructions' presents slides stored in instructions/; subjects
@@ -30,7 +30,7 @@ def run_subject(subject_id, self_report):
     their experience, passed on in 'self_report'
     """
 
-    self_report, window = stimuli.run(self_report, window, subject_id)
+    self_report, window = stimuli.run(self_report, window)
 
     """
     'video_module' presents stimuli of model undergoing fear conditioning and
@@ -39,7 +39,7 @@ def run_subject(subject_id, self_report):
     conductance and saves in neuroview, eyelink data saved in gaze_data/.
     """
 
-    exit_questions.run(window, self_report, subject_id)
+    exit_questions.run(window, self_report)
 
     """
     'exit_questions' are taken from slides in 'instruction/'; results saved in
@@ -48,14 +48,12 @@ def run_subject(subject_id, self_report):
 
 
 if __name__ == "__main__":
-    run_subject(subject_id, self_report)
+    run_subject(self_report, window)
 
 
 # TO DO: fix this warning: Class SDLTranslatorResponder is implemented in both /Users/ssnl_booth2/anaconda/envs/experimental/lib/python2.7/site-packages/pygame/.dylibs/libSDL-1.2.0.dylib and /Library/Frameworks/SDL.framework/Versions/A/SDL. One of the two will be used. Which one is undefined.
 # TO DO: fix this warning: User requested fullscreen with size [800 600], but screen is actually [1920, 1080]. Using actual size
 # TO DO: fix this warning: pyo audio lib was requested but not loaded: ImportError('No module named pyo',)
-
-
 # TO DO: figure out day two: video recorder to see if they check their hands
 
 

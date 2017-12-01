@@ -6,15 +6,15 @@ import stimuli
 import exit_questions
 from psychopy import visual
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-# TO DO: work on alignment                                                      # 
-# TO DO: which  video should we use?                                            # 
-# TO DO: switch CSs in design parameters so it triggers the biopac correctly    # 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# TO DO: work on alignment                                                      #
+# TO DO: which  video should we use?                                            #
+# TO DO: switch CSs in design parameters so it triggers the biopac correctly    #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-self_report = {}
+self_report = {'day':1}
 # name subject from command line argument, else autoname and pass error
-self_report['subject_id'], self_report['name_error'] = name_subject.command_line(1) # TYLER ADD DAY TO INPUTS AND NAME
+self_report = name_subject.new(self_report) 
 
 # set stimulus background and remove mouse visibility
 window = visual.Window([1920, 1080], fullscr=1, monitor='testmonitor', units="pix", color=[1, 1, 1]) ; window.mouseVisible = False
@@ -55,5 +55,3 @@ if __name__ == "__main__":
 # TO DO: fix this warning: User requested fullscreen with size [800 600], but screen is actually [1920, 1080]. Using actual size
 # TO DO: fix this warning: pyo audio lib was requested but not loaded: ImportError('No module named pyo',)
 # TO DO: figure out day two: video recorder to see if they check their hands
-
-

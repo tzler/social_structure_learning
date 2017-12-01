@@ -20,9 +20,9 @@ time_after_shock = 1
 # open port for shock. must wait if used immediately, e.g. 'core.wait(2)'
 SD9 = experiment_ports.SD9()
 
-def run(self_report):
+def run(self_report, win):
     """Provide instructions, self-calibration shock, and self-report."""
-    
+
     # create empty dictionary for self report answers + time details
     begin = datetime.datetime.now()
     self_report['time'] = begin.strftime('experiment began at %H:%M on %m/%d/%Y')
@@ -63,8 +63,8 @@ def run(self_report):
         elif iText == 10:
             self_report['voltage'] = keyboard_input.report_num(win, screen)
 
-    
+
     win.flip()
     SD9.close()
-    
+
     return self_report, win

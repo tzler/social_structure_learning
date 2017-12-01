@@ -5,25 +5,21 @@ import os, sys
 base_dir = os.getcwd()
 old_names = os.listdir('%s/self_report_data/' % base_dir)
 
-
-def command_line(day): 
+def new(self_report): 
     """If more than 8 characters : RuntimeError: Unexpected end of line.""" 
 
+    day = self_report['day']
+
     names_old = [] 
-    
     for name_i in old_names: 
         if name_i.startswith("s") and name_i.endswith("d%s.npy"%day): 
             names_old.append(name_i[0:-4]) 
   
-    # print 'names_old:', 
-    # print  names_old 
-     
     if len(sys.argv) > 1:  
         
         possible_name = 's' + sys.argv[-1] + '_d' + str(day)
         
         if possible_name in names_old:
-        
             bad_name = possible_name
             del possible_name
             
@@ -43,7 +39,24 @@ def command_line(day):
         new_name = "s%02dx_d%s" % (len(old_names) + 1, day)  
         error_msg = 'WARNING: SUBJECT NAME %s ALREADY IN USE, SETTING SUBJECT NAME TO %s, CHANGE WHEN POSSIBLE\n' %(bad_name, new_name) 
         
+    # set 
+    print(int(new_name[1:3]))
+    if int(day) - 1:
+        
+        counter_balance = int(new_name[1:3])%2
+        print counter_balance, type(counter_balance) 
     
+    else: 
+
+        counter_balance = None
+        print counter_balance
+    
+    self_report['subject_id'] = new_name
+    self_report['error_msg'] = error_msg
+    self_report['counter_balance'] = counter_balance
+
     if error_msg: print '\n\n\n', 'WARNING\n'*5, error_msg, 'WARNING\n'*5, '\n\n\n'
     else: print '\n\n\nNAMING CURRENT SUBJECT %s\n\n\n' %new_name 
-    return new_name, error_msg
+    #  new_name, error_msg, counter_balance
+    return self_report 
+  

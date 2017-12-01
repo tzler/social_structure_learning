@@ -19,26 +19,28 @@ def design():
     # CS  = [0,1,1,0,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,1,0,0,0,1]
     # US  = [0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
    
-    display  = [3,2,2,3,3,2,3,2,3,3,2,3,2,3,2,2,3,2,3,3,2,3,2,2,3,2,3,3,2,3,2,2,3,3,2,3,2,3,2,2,3,2,2,3,-1,-1,-1] # the last three are guesses
+    display  = [3,2,2,3,3,2,3,2,3,3,2,3,2,3,2,2,3,2,3,3,2,3,2,2,3,2,3,3,2,3,2,2,3,3,2,3,2,3,2,2,3,2,2,3,2,2,3] # the last three are guesses
     US       = [0,0,0,0,0,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    isi      = [3,5,7,5,7,7,5,7,7,5,5,5,5,7,5,7,5,5,7,5,7,5,7,5,7,5,7,5,5,7,7,5,7,7,5,7,5,7,7,5,5,7,7,5,7,5,7]
-    
+    isi      = [3,5,7,5,7,7,5,7,7,5,5,5,5,7,5,7,5,5,7,5,7,5,7,5,7,5,7,5,5,7,7,5,7,7,5,7,5,7,7,5,5,7,7,5,20,5,5]# the 20 is where it ends,  
     # hackish, but just matching the what generated the stimuli
     CS  = - (np.array(display) - 3)  
 
-
-    # CS = np.abs(np.array(CS)-1)
     return isi, CS, US
 
-def stimulus_parameters(): 
+def stimulus_parameters(self_report): 
 
     colors  = [[-1,-1, 1],  # blue 
                [ 1,-1,-1]]  # red
 
+    # set 
+    # test_CB = int(self_report['subject_id'][1:3])) % 2
+    # print test_CB, type(test_CB) 
+
     # set presentation order (of red and blue)
-    cs  = [0,1]  
-    iti = [5,7]  
-    
+    cs  = [0,1,0,1,0,1,0,1][self_report['counter_balance']:] 
+    iti = [5,5,5,5,5,5,5,5][self_report['counter_balance']:]
+        
+    print len(cs)
     cs_type = ['+', '-']        
 
     return cs, cs_type, colors, iti

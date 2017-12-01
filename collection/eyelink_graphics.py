@@ -31,7 +31,7 @@ class EyeLinkCoreGraphicsPsychoPy(pylink.EyeLinkCustomDisplay):
         self.bg_color = win.color
         self.sizeX = win.size[0]
         self.sizeY = win.size[1]
-
+        
         # check the screen units of Psychopy and make all necessary conversions for the drawing functions
         self.units = win.units
         self.monWidthCm  = win.monitor.getWidth()

@@ -9,9 +9,9 @@ import tracker_functions
 import design_parameters as params 
 
 # set time to wait for subjects' physiology to "settle"
-wait_time = 0
+wait_time = 120
 # delay before stimulus presentation, after instructions 
-delay_time = 10
+delay_time = 15
 # set time to present each stimulus     
 n_second_display = 4
 
@@ -25,7 +25,7 @@ def run(self_report, window):
 
     # Open an EDF file to store gaze data -- name cannot exceeds 8 characters
     tracker.openDataFile(link.data_file_name)
-    tracker.sendCommand("testing the combination of video with eye tracker")
+    tracker.sendCommand("day two of data collection")
 
     # set up monitors between eyelink and this computer
     window  = link.display_setup(window)
@@ -34,7 +34,7 @@ def run(self_report, window):
     core.wait(wait_time)
 
     # calibrate subjects, determine whether we're using their gaze data
-    link.calibration(tracker, window, day=2)
+    link.calibration(tracker, window, day=self_report['day'])
 
     # connect to biopac
     biopac = experiment_ports.biopac()
@@ -46,14 +46,17 @@ def run(self_report, window):
     biopac.begin()
 
     # load stimulus parameters 
-    cs, cs_type, colors, inter_trial_interval = params.stimulus_parameters()  
+    cs, cs_type, colors, inter_trial_interval = params.stimulus_parameters(self_report)  
     
     # wait to begin experiment, after instructions have ended 
     core.wait(delay_time)
 
     # start recording eyegaze
     link.initiate(tracker)
-   
+    
+    # one last "Press any button to continue"
+
+
     # begin stimulus presentation
     for i_stimulus in range(len(cs)): 
 
@@ -81,7 +84,9 @@ def run(self_report, window):
     # end video, transfer eye_tracker data, close tracker and biopac
     link.close(tracker)
     biopac.end()
-
+    self_report['CS'] = cs 
+    self_report['isi'] = inter_trial_interval
+    
     return self_report, window
 
 # function to draw stimuli

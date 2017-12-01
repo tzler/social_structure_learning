@@ -11,9 +11,9 @@ monitor = 'testmonitor'
 win = visual.Window(fullscr=1, monitor=monitor, units="pix", color=[1, 1, 1])
 win.mouseVisible = False
 
-def run(self_report):
+def run(self_report, win):
     """Provide instructions."""
-    
+
     # create empty dictionary for self report answers + time details
     begin = datetime.datetime.now()
     self_report['time'] = begin.strftime('experiment began at %H:%M on %m/%d/%Y')

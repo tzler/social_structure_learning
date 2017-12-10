@@ -8,8 +8,7 @@ def intervals():
     """Set shock timing, stimulus length, waiting period before experiment."""
     shock_lag = 3
     stimulus_length = 4
-    n_second_wait = 2
-    return shock_lag, stimulus_length, n_second_wait
+    return shock_lag, stimulus_length
 
 
 def design():

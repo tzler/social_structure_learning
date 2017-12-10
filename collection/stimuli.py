@@ -24,7 +24,7 @@ def run(self_report, window):
     """Present video, collect SCR and gaze data, align with video."""
     
     # load parameters for timing and design of stimuli
-    shock_lag, stim_length, wait_time = params.intervals()
+    shock_lag, stim_length = params.intervals()
     isi, CS, US = params.design()
     US_onset, CS_onset, CS_offset, stim_i = params.indices(isi, stim_length)
     cs_type = ['+', '-']
@@ -49,9 +49,6 @@ def run(self_report, window):
 
     # initiate biopack. set all to 0 except for "not experiment" channel
     biopac.initiate()
-
-    # begin experiment: recording physio data and presenting video
-    biopac.begin()
     
     # wait for a given interval so subjects physiological respones "settle"
     core.wait(wait_time)
@@ -68,12 +65,8 @@ def run(self_report, window):
     # adjust timing to align with stimuli in video
     core.wait(second_pause)
 
-    # one last "press any button to continue" prompt
-    #    prompt = 'The experiment will now begin. Press the space bar to continue'
-    #    text = visual.TextStim(window, text=prompt, color=(0,0,0))
-    #    text.draw()
-    #    window.flip()
-    #    event.waitKeys()
+    # begin experiment
+    biopac.begin()
 
     window.recordFrameIntervals = True
     window.refreshThreshold = 1/30 + 0.05
@@ -148,29 +141,35 @@ def run(self_report, window):
             isi_count = isi_count + 1
 
         keyPressed = event.getKeys()
-        # if exit key was pressed, pause video
+        # if exit key pressed pause video, options to calibrate, exit, or continue
         if keyPressed:
-            if (keyPressed[0] == 'w'):
+   
+          if (keyPressed[0] == exit_key):
     
                 # signal biopac that experiment is paused
                 biopac.end()            
+                
                 # wait for instructions 
                 key_pressed = event.waitKeys()
-                # if 'q' was pressed, exit, else continue
+                
+                # if 'q' was pressed, exit, 
                 if key_pressed[0] == 'q': 
                     visual.FINISHED = 1
-                else:  
-                    biopac.begin()
+                
+                # if 'c' was pressed, recalibrate
+                elif key_pressed[0] == 'c': 
+                    link.calibration(tracker, window)
+                
+                # restart experiment mode in biopac
+                biopac.begin()
 
 
     # end video, transfer eye_tracker data, close tracker and biopac
     link.close(tracker)
     biopac.end()
     self_report['frame_intervals'] = window.frameIntervals
-    #print('\n\n\n%i frames were dropped.' % window.nDroppedFrames)
     self_report['CS'] = CS
     self_report['isi'] = isi
-    self_report['finished'] = visual.FINISHED
     return self_report, window
 
 

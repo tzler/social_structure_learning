@@ -1,76 +1,80 @@
-# just followed the directions here
-# https://lennarthilbert.com/2013/10/24/ffmpeg-extract-still-images-from-video-file-python-provide-time-specific-path/
-# $ ffmpeg -i ~/DirectoryName/video_name.mp4 -s hd720 -r 30 -f image2  image%05d.jpg
-# from the command line
-# and then 
-# $ python jpeg2movie.py 
-# which is in this folder--also from that site above
-
+"""
+Plots xy gaze position over video subjects were watching, with a low-alpha trail to make it pretty
+"""
+import matplotlib.pyplot as plt
+from eyelink_functions import load_data, extract_data
+from time import time
 import numpy as np
 import os
-import matplotlib.pyplot as plt
-from eyelink_functions import * 
-from psychopy import visual
 
-plt.ion() ; plt.figure(figsize=[5, 3], dpi=200); 
-
-# data and interval info 
+# data  
 subject_data = load_data('12')
 data = extract_data(subject_data)
 xy = data['xy']
-show = data['onsets']
 
-# movie info
-folder_path = '/Users/biota/Desktop/sSL/experiment_2/analysis/gaze/video_overlay/jpeg2movie_folder/'
-movie_images = os.listdir(folder_path)
+# color coding gaeze location by adding an arbitrary interval (3000) after each US onset 
+_us_ = data['onsets'][np.nonzero(['US' in data['cs_type'][ii] for ii in range(len(data['cs_type']))])]
+US = np.array([np.arange(_us_[ii], _us_[ii]+3000)  for ii in range(len(_us_))])
+
+# movie 
 frames = data['movie_frame']
-catch = np.nan
+folder_path = 'jpeg2movie_folder/'
+movie_images = os.listdir(folder_path)
+frame_rate = .03
 
-def set_color(cs_type): 
-    if '+' in cs_type: color = 'blue'
-    if '-' in cs_type: color = 'blue'
-    if 'US'in cs_type: color = 'red'
-    return color
+# aesthetics
+x_scale, x_shift = .7, -50  # aligns with video x
+y_scale, y_shift = .7,  50  # aligns with video y 
+gaze_locate = 30            # gaze location
+trail_short = 100           # shorter trail 
+trail_long  = 300           # longer trail
+ref_frame = np.nan              #  
 
-# trail aesthetics
-trail_short = 100 
-trail_long  = 300
-x_scale, x_shift = .6, -50
-y_scale, y_shift = .6,  50
-
-_US_ = np.nonzero([['US' in data['cs_type'][ii] for ii in range(len(data['cs_type']))]])[1]
-US_ = data['onsets'][_US_]
-US = np.array([np.arange(US_[ii], US_[ii]+3000)  for ii in range(len(US_))])
-
-for i_gaze in range(0,80000, 50): 
+time_i = time()
+for i_gaze in range(10000, len(data['xy']), 60): 
     
-    if i_gaze < trail_short and i_gaze < trail_long:  
-        i_trail = 0
-        j_trail = 0
-    elif i_gaze > trail_short and i_gaze < trail_long: 
-        i_trail = i_gaze - trail_short
-        j_trail = 0
-    else: 
-        i_trail = i_gaze - trail_short
-        j_trail = i_gaze - trail_long
+    # clear screen
+    if ref_frame != ref_frame or i_gaze != ref_frame: plt.cla()
+    
+    i_trail = i_gaze - gaze_locate 
+    j_trail = i_gaze - trail_short 
+    k_trail = i_gaze - trail_long  
+    
+    if i_gaze in US: _color_ = 'xkcd:red'
+    else: _color_ = 'blue'
 
-    if frames[i_gaze] == frames[i_gaze] and catch != frames[i_gaze]: 
-        plt.cla()
-        catch = int(frames[i_gaze])
-        _img_ = plt.imread('%s%s'%(folder_path, movie_images[catch]))
-        plt.imshow(plt.imread('%s%s'%(folder_path, movie_images[catch])), alpha=.8)
-    else: 
-        plt.cla()
-
-    if i_gaze in US: _color_, _size_ = 'red', 100
-    else: _color_, _size_ = 'blue', 40
-
+    # flip frames at rate and time corresponding to experiment
+    if frames[i_gaze] == frames[i_gaze] and ref_frame != frames[i_gaze]: 
+        
+        ref_frame = int(frames[i_gaze])
+        _img_ = plt.imread('%s%s'%(folder_path, movie_images[ref_frame]))
+        remaining_time = frame_rate - (time() - time_i) 
+        # if remaining_time > 0: plt.pause(remaining_time)        
+        # else: print('frames changing too slow ... ', remaining_time, time_i)
+        plt.imshow(_img_, alpha=.4)
+        time_i = time()
+    
+    # main plot: plot up to current gaze position with a low alpha trail 
     plt.scatter(xy[i_trail:i_gaze,0]*x_scale+x_shift, xy[i_trail:i_gaze,1]*y_scale+y_shift, 
-            alpha=.01,  s = _size_, color=_color_)
+            alpha=.005, color=_color_, s=1000)
     plt.scatter(xy[j_trail:i_gaze,0]*x_scale+x_shift, xy[j_trail:i_gaze,1]*y_scale+y_shift, 
-            alpha=.005, s = _size_, color=_color_)
+            alpha=.005, color=_color_, s=100)
+    plt.scatter(xy[k_trail:i_gaze,0]*x_scale+x_shift, xy[k_trail:i_gaze,1]*y_scale+y_shift, 
+            alpha=.002, color=_color_, s=20)
+   
+   # aesthetics
+    plt.xlim([-100, 2000]) ; plt.ylim([1000, -100])
+    plt.axis('off') ; plt.pause(10e-10) 
 
-    plt.xlim([0, 1500]) ; 
-    plt.ylim([1550, 0])
-    plt.axis('off')
-    plt.pause(.00000000000000001)  
+
+###########################################################################################################
+#
+# two steps needed to convert the movie to a sequence of images--followed the directions here
+#       https://lennarthilbert.com/2013/10/24/ffmpeg-extract-still-images-from-video-file-python-provide-time-specific-path/
+# from the command line
+# $ ffmpeg -i ~/DirectoryName/video_name.mp4 -s hd720 -r 30 -f image2  image%05d.jpg
+# and then 
+# $ python jpeg2movie.py 
+# which is in this folder--also from that site above
+#
+############################################################################################################

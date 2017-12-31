@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 # data  
-subject_data = load_data('12')
+subject_data = load_data('01')
 data = extract_data(subject_data)
 xy = data['xy']
 
@@ -18,20 +18,23 @@ US = np.array([np.arange(_us_[ii], _us_[ii]+3000)  for ii in range(len(_us_))])
 
 # movie 
 frames = data['movie_frame']
-folder_path = 'jpeg2movie_folder/'
+folder_path = 'movie_frames/'
 movie_images = os.listdir(folder_path)
 frame_rate = .03
 
 # aesthetics
 x_scale, x_shift = .7, -50  # aligns with video x
-y_scale, y_shift = .7,  50  # aligns with video y 
+y_scale, y_shift = .6, 50   # aligns with video y 
 gaze_locate = 30            # gaze location
 trail_short = 100           # shorter trail 
 trail_long  = 300           # longer trail
 ref_frame = np.nan              #  
 
+start_frame = 60000
 time_i = time()
-for i_gaze in range(10000, len(data['xy']), 60): 
+plt.pause(2)
+
+for i_gaze in range(start_frame, len(data['xy']), 60): 
     
     # clear screen
     if ref_frame != ref_frame or i_gaze != ref_frame: plt.cla()

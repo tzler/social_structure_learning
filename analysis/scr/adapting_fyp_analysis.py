@@ -4,7 +4,7 @@ import scipy.signal as signal
 import numpy as np
 import pandas
 import os
-
+from pandas import read_csv
 
 
 class experimental(object):  
@@ -13,10 +13,12 @@ class experimental(object):
         # loadData configs
         self.path2data = path2data
         self.day = 1
+	self.US = 2 - self.day
+	self.initial_cutout = 200000
         # transformData configs
         self.showTransform = 0 
-        self.keepEdgeBefore = 5 #
-        self.keepEdgeAfter = 5
+        self.keepEdgeBefore = 0 #
+        self.keepEdgeAfter = 0
         self.filterOrder = 2 
         self.lowPassCutoffFrequency = 0.00001
         self.hightPassCutoffFrequency = .0005
@@ -29,33 +31,65 @@ class experimental(object):
         self.lowPassCutoffFrequency = 0.00001
         self.hightPassCutoffFrequency = .0005
         # 
-        
-        
         self.windowstart = 1
-        
         self.nSeconds = 4.5
-    def loadData(self): 
-        self.rawData = {} ; 
-        self.subjectNames = []
-        tmpFiles = os.listdir(self.path2data)
-        count = 0 
+	
+    
+    def loadData(self):
+            """ 
+            """
+       	    count = 0 
+      	    raw_data = {}
+    	    self.subjectNames = []
+            data_path = self.path2data
+	    files = os.listdir(data_path)
+            unique_ids = np.unique([files[ii][1:3] for ii in range(len(files))]);
+
+            for _id_ in unique_ids:         
+                
+        	# find indices of each unique number--e.g. subject
+        	subject_inds = np.nonzero([str.find(files[ii], _id_) == 1 for ii in range(len(files))])[0]
+        	# only include those subjects who have two days of data
+          	if len(subject_inds) == 2:
+        	    
+        	    _raw_data_ = []
+               	    for day in subject_inds:
+                        if 'd%s'%self.day in files[day]: 
+          	            _day_ = read_csv('%s/%s'%(data_path,files[day]), sep=',',header=None)
+           		    self.subjectNames.append(files[day])
+              	    	    _raw_data_ = _day_.values 
+            	    	    # remove initial segment and then extract times with experimetn was "on"
+                    	    if self.day == 1:  
+        	 	    	_raw_data_ = _raw_data_[self.initial_cutout:]
+                            _raw_data_ = _raw_data_[_raw_data_[:,4] == 0]
+        		    raw_data[count] = _raw_data_
+        		    count = count + 1
+	    
+	    self.nSubjects = len(self.subjectNames)
+	    self.rawData = raw_data
         
-        if self.day == 2: 
-            fileEnding = 'part2.txt'
-        if self.day == 1: 
-            fileEnding = 'part1.txt'
-        #if self.day == 'cb': 
-        #    fileEnding = 'cb_part2.txt'
-        #    self.day = 2
-            
-        self.US = 2 - self.day
-        for file in tmpFiles: 
-            if str.find(file, fileEnding) != -1: 
-                tmp = pandas.read_csv('%s/%s'%(self.path2data,file), sep=',',header=None)
-                self.rawData[count] = tmp.values[:,0:5-self.day] ; 
-                self.subjectNames.append(file) ; count = count+1
-        
-        self.nSubjects = len(self.subjectNames)
+#def loadData(self): 
+#        self.rawData = {} ; 
+#        self.subjectNames = []
+#        tmpFiles = os.listdir(self.path2data)
+#        count = 0 
+#        
+#        if self.day == 2: 
+#            fileEnding = 'part2.txt'
+#        if self.day == 1: 
+#            fileEnding = 'part1.txt'
+#        #if self.day == 'cb': 
+#        #    fileEnding = 'cb_part2.txt'
+#        #    self.day = 2
+#            
+#        self.US = 2 - self.day
+#        for file in tmpFiles: 
+#            if str.find(file, fileEnding) != -1: 
+#                tmp = pandas.read_csv('%s/%s'%(self.path2data,file), sep=',',header=None)
+#                self.rawData[count] = tmp.values[:,0:5-self.day] ; 
+#                self.subjectNames.append(file) ; count = count+1
+#        
+#        self.nSubjects = len(self.subjectNames)
   
     def transformData(self): 
         
@@ -64,13 +98,15 @@ class experimental(object):
         rawData = self.rawData
         self.rawDataCut = []
         
-        for iSubject in range(0,len(rawData)): 
-            # extract the timecourse of the experiment, not the initial resting period or post-experiment questions 
-            onset  = min(min(find(rawData[iSubject][:,1])),min(find(rawData[iSubject][:,2]))) - 1000*self.keepEdgeBefore 
-            offset = max(max(find(rawData[iSubject][:,2])),max(find(rawData[iSubject][:,1]))) + 1000*self.keepEdgeAfter
-            temp = rawData[iSubject][onset:offset,0]  
-            self.rawDataCut.append(temp)
+        for iSubject in range(0,self.nSubjects):
 
+            # extract the timecourse of the experiment, not the initial resting period or post-experiment questions 
+#            onset  = min(min(find(rawData[iSubject][:,1])),min(find(rawData[iSubject][:,2]))) - 1000*self.keepEdgeBefore 
+#            offset = max(max(find(rawData[iSubject][:,2])),max(find(rawData[iSubject][:,1]))) + 1000*self.keepEdgeAfter
+#            temp = rawData[iSubject][onset:offset,0]  
+            temp = rawData[iSubject][:,0]
+            self.rawDataCut.append(temp)
+		
             # First, design the Buterworth filter to extract lowest frequency variation - a better mean, basically, to subtract
             N1  = self.filterOrder   
             Wn1 = self.lowPassCutoffFrequency
@@ -92,8 +128,11 @@ class experimental(object):
             
             # zscore the filtered data
             filteredData = (filteredData-np.mean(filteredData))/np.std(filteredData)
-            transformedData.append([filteredData,rawData[iSubject][onset:offset,1:(3+self.US)]])
-            
+            #transformedData.append([filteredData,rawData[iSubject][onset:offset,1:(3+self.US)]])
+            # this isn't necessary any more now that we have a marker for experiment on and off we're using above
+            transformedData.append([filteredData,rawData[iSubject][:,1:(3+self.US)]])
+
+
             if self.showTransform: 
                 figure(figsize=(20,5))
                 plot(temp, 'xkcd:blue',alpha=.4, linewidth=5)
@@ -125,7 +164,15 @@ class experimental(object):
         self.loadData()
         self.transformData()
         
-    def stimuli(self,CS): 
+    def stimuli(self, CS): 
+    
+	marks   = np.convolve(CS, [1,-1])
+   	onsets  = np.nonzero(marks > 0)[0]
+   	offsets = np.nonzero(marks < 0)[0]
+    
+    	return onsets, offsets 
+
+    def old_stimul(self,CS): 
         compareA = np.append(find(CS),find(CS)[-1])
         compareB = np.append(find(CS)[0],find(CS))
         delta = compareA-compareB
@@ -147,11 +194,11 @@ class experimental(object):
         p1 = np.zeros(len(inputData)) ; 
         m1 = np.zeros(len(inputData))
         
-        if iStim >= 3: 
-            pStim = iStim 
-            mStim = iStim + 1
-        else: 
-            mStim = pStim = iStim
+        #if iStim >= 3: 
+        #    pStim = iStim 
+        #    mStim = iStim + 1
+        #else: 
+        mStim = pStim = iStim
 
         for iSubject in range(0,len(inputData)): 
 
@@ -336,5 +383,5 @@ def visualizeStats(plus,minus,results,heading='vicarious renewal',show=1):
     
     hist(plus,alpha=.3,color='red')
     hist(minus,alpha=.3,color='blue')
-    title('mean CS+ = %s, mean CS- = %s'%(np.mean(plus),np.mean(minus)))
+    title('mean CS+ = %.04f, mean CS- = %.04f'%(np.mean(plus),np.mean(minus)))
 

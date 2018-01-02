@@ -45,7 +45,7 @@ def run(self_report, window):
     window, movie, frame_time = link.movie_setup(window)
 
     # connect to biopac
-    biopac = experiment_ports.biopac()
+    biopac = experiment_ports.biopac() ; core.wait(1)
 
     # initiate biopack. set all to 0 except for "not experiment" channel
     biopac.initiate()

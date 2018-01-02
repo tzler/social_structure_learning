@@ -8,10 +8,10 @@ import os
 
 
 class experimental(object):  
-    def __init__(self):    
+    def __init__(self, path2data):    
         
         # loadData configs
-        self.path2data = os.getcwd() + '/data_physio_study1/'
+        self.path2data = path2data
         self.day = 1
         # transformData configs
         self.showTransform = 0 

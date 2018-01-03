@@ -18,7 +18,8 @@ class eyelink:
         self.data_file_name = subject_id + '.EDF'
         # variables to be loaded from in the script
         # self.video_path = os.getcwd() + '/audio_visual/trim_test.MP4'
-        self.video_path = '/Users/ssnl_booth2/Desktop/model_experiment_two.MP4'
+        # self.video_path = '/Users/ssnl_booth2/ssl/experiment_2/collection/audio_visual/model_experiment_two.MP4'
+        self.video_path = '/Users/ssnl_booth2/ssl/experiment_1/Khoi_trimmed.MP4'
         # self.video_path = '/Users/ssnl_booth2/Desktop/model_sans_audio.mov'
     def eye_tracker_setup(self):
         """Set up the tracker."""

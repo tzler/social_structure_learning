@@ -55,7 +55,7 @@ def run(self_report, window):
 
     # calibrate subjects
     link.calibration(tracker, window)
-    
+
     # start recording eyegaze
     link.initiate(tracker)
 

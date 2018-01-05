@@ -5,11 +5,10 @@ import os, csv
 from sklearn.cluster import KMeans as kmeans
 import matplotlib.pyplot as plt
 
-def load_data(subject_id, listen=0): 
+def load_data(subject_id, day=1, listen=0): 
     """inputs: 'day' = int [1 OR 2]
     returns a list of all subjects in gaze directory matching 'day'"""
 
-    day=1
     data_file_names = []
     data_path = '../../../collection/gaze_data/'
     folder_contents = os.listdir(data_path)
@@ -88,6 +87,7 @@ def extract_data(subject_data):
 
                         ind = str.find(msg[1], "VFRAME")
                         space = str.find(msg[1], " 0 0 /")
+                        if space == -1: space = str.find(msg[1], " 0 0 ../")
                         i_frame = int(msg[1][ind+7:space])
                     
                     if "TRIAL_ONSET" in msg[1]:

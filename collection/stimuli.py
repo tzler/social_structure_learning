@@ -18,7 +18,7 @@ window_before_CS = 2
 # set n_stimuli presented before the next drift correction
 drift_interval = 6
 # 
-second_pause = 15
+second_pause = 120
 
 def run(self_report, window):
     """Present video, collect SCR and gaze data, align with video."""
@@ -36,7 +36,7 @@ def run(self_report, window):
 
     # Open an EDF file to store gaze data -- name cannot exceeds 8 characters
     tracker.openDataFile(link.data_file_name)
-    tracker.sendCommand("testing the combination of video with eye tracker")
+    tracker.sendCommand("social structure learning replication")
 
     # set indices that will mark experimental conditions for the eye tracker
     tracker_onset, isi_count, frame_n, frame_t, time_i = link.indices(CS_onset)
@@ -45,7 +45,10 @@ def run(self_report, window):
     window, movie, frame_time = link.movie_setup(window)
 
     # connect to biopac
-    biopac = experiment_ports.biopac() ; core.wait(1)
+    biopac = experiment_ports.biopac() 
+
+    # calibrate subjects
+    link.calibration(tracker, window)
 
     # initiate biopack. set all to 0 except for "not experiment" channel
     biopac.initiate()
@@ -53,21 +56,17 @@ def run(self_report, window):
     # wait for a given interval so subjects physiological respones "settle"
     core.wait(wait_time)
 
-    # calibrate subjects
-    link.calibration(tracker, window)
-
     # start recording eyegaze
     link.initiate(tracker)
 
     # set time to zero and start
     time = core.Clock()
-    
-    # adjust timing to align with stimuli in video
-    core.wait(second_pause)
-
+   
     # begin experiment
     biopac.begin()
-
+    tracker.sendMessage('EXPERIMENT_ONSET')
+    
+    # clean this up
     window.recordFrameIntervals = True
     window.refreshThreshold = 1/30 + 0.05
     logging.console.setLevel(logging.WARNING)
@@ -165,6 +164,7 @@ def run(self_report, window):
 
 
     # end video, transfer eye_tracker data, close tracker and biopac
+    tracker.sendMessage('EXPERIMENT_OFFSET')
     link.close(tracker)
     biopac.end()
     self_report['frame_intervals'] = window.frameIntervals

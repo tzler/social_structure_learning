@@ -29,7 +29,7 @@ def run(self_report, win):
 
     # mostly finished, aside from updating the slides
 
-    for iText in range(1, 13):
+    for iText in range(1, 12):
 
         # load instructions
         text = '%s/instruction_slides/day1_intro%s.png' % (getcwd(), iText)
@@ -40,7 +40,7 @@ def run(self_report, win):
         win.flip()
 
         # for simple instruction slides present text and wait for keypress
-        if iText in [1, 2, 3, 4, 5, 11, 12]:
+        if iText in [1, 2, 3, 4, 5, 11]: # tyler removed 12 to change location of settling time
             event.waitKeys()
 
         # self calibration

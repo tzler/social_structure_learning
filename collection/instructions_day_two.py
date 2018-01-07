@@ -18,7 +18,7 @@ def run(self_report, win):
     begin = datetime.datetime.now()
     self_report['time'] = begin.strftime('experiment began at %H:%M on %m/%d/%Y')
 
-    for iText in range(1,3):
+    for iText in range(1,2):
 
         # load instructions
         text = '%s/instruction_slides/day2_intro%s.png' % (getcwd(), iText)

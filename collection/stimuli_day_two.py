@@ -30,9 +30,6 @@ def run(self_report, window):
     # set up monitors between eyelink and this computer
     window  = link.display_setup(window)
 
-    # wait for a given interval so subjects physiological respones "settle"
-    core.wait(wait_time)
-
     # calibrate subjects, determine whether we're using their gaze data
     link.calibration(tracker, window, day=self_report['day'])
 
@@ -42,6 +39,9 @@ def run(self_report, window):
     # initiate biopack. set all to 0 except for "not experiment" channel
     biopac.initiate()
 
+    # wait for a given interval so subjects physiological respones "settle"
+    core.wait(wait_time)
+
     # begin experiment: recording physio data and presenting video
     biopac.begin()
 
@@ -49,13 +49,10 @@ def run(self_report, window):
     cs, cs_type, colors, inter_trial_interval = params.stimulus_parameters(self_report)  
     
     # wait to begin experiment, after instructions have ended 
-    core.wait(delay_time)
+    # core.wait(delay_time)
 
     # start recording eyegaze
     link.initiate(tracker)
-    
-    # one last "Press any button to continue"
-
 
     # begin stimulus presentation
     for i_stimulus in range(len(cs)): 

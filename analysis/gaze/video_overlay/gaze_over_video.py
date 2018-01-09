@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 # data  
-subject_data = load_data('21', day=1)
+subject_data = load_data('23', day=1)
 data = extract_data(subject_data)
 xy = data['xy']
 

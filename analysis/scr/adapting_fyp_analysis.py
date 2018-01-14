@@ -66,7 +66,7 @@ class experimental(object):
         		    count = count + 1
 	    
 	    self.nSubjects = len(self.subjectNames)
-	    self.rawData = raw_data
+            self.rawData = raw_data
         
 #def loadData(self): 
 #        self.rawData = {} ; 

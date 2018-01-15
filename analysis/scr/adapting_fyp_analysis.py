@@ -14,7 +14,7 @@ class experimental(object):
         self.path2data = path2data
         self.day = 1
 	self.US = 2 - self.day
-	self.initial_cutout = 200000
+	self.initial_cutout = 0 # 200000
         # transformData configs
         self.showTransform = 0 
         self.keepEdgeBefore = 0 #
@@ -34,39 +34,73 @@ class experimental(object):
         self.windowstart = 1
         self.nSeconds = 4.5
 	
-    
-    def loadData(self):
-            """ 
-            """
-       	    count = 0 
-      	    raw_data = {}
-    	    self.subjectNames = []
-            data_path = self.path2data
-	    files = os.listdir(data_path)
-            unique_ids = np.unique([files[ii][1:3] for ii in range(len(files))]);
 
-            for _id_ in unique_ids:         
-                
-        	# find indices of each unique number--e.g. subject
-        	subject_inds = np.nonzero([str.find(files[ii], _id_) == 1 for ii in range(len(files))])[0]
-        	# only include those subjects who have two days of data
-          	if len(subject_inds) == 2:
-        	    
-        	    _raw_data_ = []
-               	    for day in subject_inds:
-                        if 'd%s'%self.day in files[day]: 
-          	            _day_ = read_csv('%s/%s'%(data_path,files[day]), sep=',',header=None)
-           		    self.subjectNames.append(files[day])
-              	    	    _raw_data_ = _day_.values 
-            	    	    # remove initial segment and then extract times with experimetn was "on"
-                    	    if self.day == 1:  
-        	 	    	_raw_data_ = _raw_data_[self.initial_cutout:]
-                            _raw_data_ = _raw_data_[_raw_data_[:,4] == 0]
-        		    raw_data[count] = _raw_data_
-        		    count = count + 1
-	    
-	    self.nSubjects = len(self.subjectNames)
-            self.rawData = raw_data
+    def loadData(self): 
+        
+        path2data = '/Users/biota/Desktop/sSL/experiment_2/collection/scr_data/'
+    
+        count = 0
+        raw_data = {}
+        subjectNames = []
+        data_path = self.path2data
+        files = os.listdir(data_path)
+        unique_ids = np.unique([files[ii][1:3] for ii in range(len(files))]);
+        for _id_ in unique_ids:
+    
+            # find indices of each unique number--e.g. subject
+            subject_inds = np.nonzero([str.find(files[ii], _id_) == 1 for ii in range(len(files))])[0]
+            # only include those subjects who have two days of data
+    
+            if len(subject_inds) == 2:
+    
+                _raw_data_ = []
+    
+                for day in subject_inds:            
+                    if 'd%s'%self.day in files[day]: 
+                        _day_ = read_csv('%s/%s'%(data_path,files[day]), sep=',',header=None)
+                        subjectNames.append(files[day])
+                        _raw_data_ = _day_.values
+                        _raw_data_ = _raw_data_[_raw_data_[:,4] == 0]
+                        raw_data[count] = _raw_data_
+                        count = count + 1
+    
+        self.nSubjects = len(subjectNames)
+	self.subjectNames = subjectNames
+        self.rawData = raw_data
+    
+
+
+#    def loadData(self):
+#            """ 
+#            """
+#       	    count = 0 
+#      	    raw_data = {}
+#    	    self.subjectNames = []
+#            data_path = self.path2data
+#	    files = os.listdir(data_path)
+#            unique_ids = np.unique([files[ii][1:3] for ii in range(len(files))]);
+#            print unique_ids
+#            for _id_ in unique_ids:         
+#                
+#        	# find indices of each unique number--e.g. subject
+#        	subject_inds = np.nonzero([str.find(files[ii], _id_) == 1 for ii in range(len(files))])[0]
+#        	# only include those subjects who have two days of data
+#          	if len(subject_inds) == 2:
+#        	    
+#        	    _raw_data_ = []
+#               	    for day in subject_inds:
+#                        if 'd%s'%self.day in files[day]: 
+#          	            _day_ = read_csv('%s/%s'%(data_path,files[day]), sep=',',header=None)
+#           		    self.subjectNames.append(files[day])
+#              	    	    _raw_data_ = _day_.values 
+#            	    	    # remove initial segment and then extract times with experimetn was "on"
+#                    	    if self.day == 1:  
+#        	 	    	_raw_data_ = _raw_data_[self.initial_cutout:]
+#                            _raw_data_ = _raw_data_[_raw_data_[:,4] == 0]
+#        		    raw_data[count] = _raw_data_
+#        		    count = count + 1#	    
+#	    self.nSubjects = len(self.subjectNames)
+#            self.rawData = raw_data
         
 #def loadData(self): 
 #        self.rawData = {} ; 

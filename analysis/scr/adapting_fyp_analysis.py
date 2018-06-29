@@ -38,7 +38,7 @@ class experimental(object):
     def loadData(self): 
         
         path2data = '/Users/biota/Desktop/sSL/experiment_2/collection/scr_data/'
-    
+     
         count = 0
         raw_data = {}
         subjectNames = []
@@ -331,8 +331,13 @@ class experimental(object):
             pStim = iStim 
             mStim = iStim + 1
         else: 
-            mStim = pStim = iStim
-        for iSubject in range(0,self.nSubjects): 
+            mStim = pStim = iStim        
+
+        # mStim = pStim = iStim
+        for iSubject in range(0,self.nSubjects):
+            
+       #     print self.subjectNames[iSubject]
+
             if inputData == 'trans': 
                 data = self.transData[iSubject][0]
                 condMarkers = np.copy(self.transData[iSubject][1])

@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 # data  
-subject_data = load_data('23', day=1)
+subject_data = load_data('50', day=1)
 data = extract_data(subject_data)
 xy = data['xy']
 
@@ -47,7 +47,7 @@ for i_gaze in range(start_frame, len(data['xy']), 60):
     j_trail = i_gaze - trail_short 
     k_trail = i_gaze - trail_long  
     
-    if i_gaze in US: _color_ = 'xkcd:red'
+    if i_gaze in US: _color_ = 'red'
     else: _color_ = 'blue'
     
     # flip frames at rate and time corresponding to experiment
@@ -57,7 +57,7 @@ for i_gaze in range(start_frame, len(data['xy']), 60):
         remaining_time = frame_rate - (time() - time_i) 
         # if remaining_time > 0: plt.pause(remaining_time)        
         # else: print('frames changing too slow ... ', remaining_time, time_i)
-        plt.imshow(_img_, alpha=.4)
+        plt.imshow(_img_, alpha=.5)
         time_i = time()
     
     # main plot: plot up to current gaze position with a low alpha trail 
@@ -66,7 +66,7 @@ for i_gaze in range(start_frame, len(data['xy']), 60):
     plt.scatter(xy[k_trail:i_gaze,0], xy[k_trail:i_gaze,1], alpha=.005, color=_color_, s=10)
    
    # aesthetics
-    plt.xlim([-100, 2000]) ; plt.ylim([1000, -100])
+    plt.xlim([-100, 2000]) ; plt.ylim([2000, -100])
     plt.axis('off') ; plt.pause(10e-10) 
 
 

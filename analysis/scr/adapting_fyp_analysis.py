@@ -44,9 +44,12 @@ class experimental(object):
         subjectNames = []
         data_path = self.path2data
         files = os.listdir(data_path)
+        files.sort()
         unique_ids = np.unique([files[ii][1:3] for ii in range(len(files))]);
+        print unique_ids
+        
         for _id_ in unique_ids:
-    
+            print _id_
             # find indices of each unique number--e.g. subject
             subject_inds = np.nonzero([str.find(files[ii], _id_) == 1 for ii in range(len(files))])[0]
             # only include those subjects who have two days of data

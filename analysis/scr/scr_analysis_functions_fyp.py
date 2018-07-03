@@ -38,6 +38,7 @@ class experimental(object):
         self.rawData = {} ; 
         self.subjectNames = []
         tmpFiles = os.listdir(self.path2data)
+        tmpFiles.sort()
         count = 0 
         
         if self.day == 2: 

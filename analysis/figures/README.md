@@ -12,7 +12,12 @@ And, finally, we can show that there is a continuous relationship between predic
 
 ![day_two_comparison](day_one_scr_comparision.png)
 
-### We replicate these results in a second study, finding the same pattern of evidence.  
+We collected a range of state- and trait-level self-report data, but there doesn't seem to be much off-diagonal relationship between behavioral and physiological data in the full covariance matrix. 
+
+![a](covariace_matrix_study_one.png)
+
+
+### We replicate these results in a second study, finding the same pattern of physiological evidence, as well as attentional covariates using eye-tracking. 
 
 While there were no subjects who showed significantly differentially predictive responses to the CS+ on day one during conditioned, in this smaller cohort, looking across different statistical threshholds we observe the same pattern of evidence: predictive learning and not emotional contagion predicts renewal. 
 
@@ -42,8 +47,4 @@ Yet this same measure does not predict our physiological measures of interest--a
 There are, however, other measures that do predict renewal: the amount of pain subjects report feeling at experiencing the shock themselves (```self_pain```), trait-level personal distress (```personal_distress```) as measured by the IRI, and looking time at the model's wrist, at the time of the US (```US_onset_wrist```): 
 
 ![faces_self_report](self_report_renewal.png)
-
-As well as the fully covariance matrix of behavioral and physiological data: 
-![a](covariace_matrix_study_one.png)
-
 

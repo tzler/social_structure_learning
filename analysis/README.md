@@ -11,4 +11,4 @@
 - imports ```gaze_analysis_objects.pkl```, gaze data that have already been preprocessed
 - imports ```behavioral_analysis_objects.pkl```, self-report data (trait and state) that have - already been preprocessed
 
-Figures and a brief description of the results are in ```figures/```
+Figures and a brief description of results are in ```figures/```

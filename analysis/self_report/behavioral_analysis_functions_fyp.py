@@ -10,11 +10,10 @@ sns.set()
 pandas.options.mode.chained_assignment = None
 
 
-def generate_data_frame():
+def generate_data_frame(data_path):
     """Generate a pandas data frame from behavioral data of all subjects."""
-    data_path = os.getcwd() + '/data_self_report_study1'
     file_names = os.listdir(data_path) 
-
+    file_names.sort()
     subject_names = []
 
     for file in file_names:

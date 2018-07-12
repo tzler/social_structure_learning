@@ -12,7 +12,8 @@ def load_data(subject_id, day=1, listen=0):
     data_file_names = []
     data_path = '../../../collection/gaze_data/'
     folder_contents = os.listdir(data_path)
-    
+    folder_contents.sort()
+
     for file in folder_contents: 
         if 'd%s.asc'%day in file and not 'x' in file: 
             data_file_names.append(file)

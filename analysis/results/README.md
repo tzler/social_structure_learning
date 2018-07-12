@@ -1,10 +1,9 @@
-# social\_structure\_learning
+# `social structure learning`
 
-```description```
+Animal behavior is shaped through social experience; often adaptively, at times unknowingly, we draw from our experiences with others in our engagement with the world around us. **`Social conditioning`** is among the most ancient forms of social learning, where social cues (e.g. bodliy responses, vocalizations) of a conspecific are thought to provide a teaching signal enabling observers to learn about the value of environmental stimuli (e.g. the taste of food, the temperature of an object). Observers in these contexts have been shown to undergo the same well-characterized learning trajectories that are implicated in first-person conditioning, and recruit the same neural systems. 
 
-Social cues are thought to provide a teaching signal that enables learning about the environmental contingencies. In social fear conditioning, for example, it has been shown that observing a conspecific being shocked recruits many of the same neural mechanisms for conditioning to a direct US (e.g. the amygdala), and undergos the same well-characterized learning trajectories (e.g. conditioning and extinction). In these experiments, and much of the emotion literature, facial expressions are thought to act as an "unconditioned stimulus", much like a direct experience with an aversive event.  
+Here we argue that `a)` observers can learn about **`environmental structure`** through social observation, not simply pairwise relationship between observable features, and `b)` this form of `social structure learning` is not predicted by self-reported measures, but implicit measures of attention. We support these claims by demonstrating the first experimental evidence that mammals (in our case, humans) who undergo social fear conditioning demonstrate **`fear renewal`**, employing self-report and physiological measures in a two-day study. We then replicate these findings in a second study, and extend them by asking what patterns of attention predict these physiological responses. Contrary to prevailing theories of emotion, we find that attention to causal relationships---*and not faces*---predict physiological measures of learning and renewal across the experiment. These results corroborate previous findings that social conditioning recruits many of the same biological systems implicated in first person learning, but extend into a novel framework.  
 
-```description```
 
 ### `study one`: psychological and physiological responses day one
 

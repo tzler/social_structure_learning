@@ -297,8 +297,8 @@ class experimental(object):
                                                                       round(m1[iSubject],3),tmpDifference),fontsize=15);              
         return p1,m1
 
-    def findAmplitude(self,data,stims,iStim,nsForward): 
-        interval4max = data[stims[iStim]+1000*self.windowstart:stims[iStim]+1000*nsForward]
+    def findAmplitude(self,data,stims,iStim,nsForward):
+        interval4max = data[int(stims[iStim]+1000*self.windowstart):int(stims[iStim]+1000*nsForward)]
         index4max = stims[iStim] + interval4max.argmax() + 1000*self.windowstart
         value4max = data[index4max]
 
